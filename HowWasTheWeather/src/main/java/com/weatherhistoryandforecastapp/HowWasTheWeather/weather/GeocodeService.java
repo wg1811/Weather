@@ -37,21 +37,25 @@ public class GeocodeService {
                                          "Failed to get coordinates."));
                     }
             })
-            .bodyToMono(String.class)
-            .map(json -> {
+            .bodyToMono(JsonNode.class)
+            .map(JsonNode -> {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode root = mapper.readTree(json);
-                    JsonNode location = root.get("results").get(0).get("geometry").get("location");
-
-                    double lat = location.get("lat").asDouble();
-                    double lng = location.get("lng").asDouble();
-
-                    return new Coordinates(lat, lng);
-                } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse response.", e);
+                   JsonNode results = JsonNode.get("results");
+                   if (results != null && results.isArray() && results.size() > 0) {
+                    JsonNode geometry = results.get(0).get("geometry");
+                    if (geometry != null) {
+                        JsonNode location = geometry.get("location");
+                        if (location != null) {
+                            double lat = location.get("lat").asDouble();
+                            double lng = location.get("lng").asDouble();
+                            return new Coordinates(lat, lng);
+                        }
+                    }
                 }
-            });
-    }
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to extract coordinates.");
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse response.", e);
+            }
+        });    }
 }
    
