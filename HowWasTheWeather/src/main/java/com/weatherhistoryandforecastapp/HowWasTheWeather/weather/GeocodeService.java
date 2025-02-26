@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class GeocodeService {
     private final WebClient webClient;
-    private final String apiKey = "XXXXXXXXXXXXXXXXXXXXXXXXX"; // Need to get this from application properties or environment variables
+    private final String apiKey = "AIzaSyA-8Z5fBmCfdh7SHivvAhd2KKMKxD_V00o"; // Need to get this from application properties or environment variables
 
     public GeocodeService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://maps.googleapis.com/maps/api/geocode/json").build(); // Not sure this is the right URL.
