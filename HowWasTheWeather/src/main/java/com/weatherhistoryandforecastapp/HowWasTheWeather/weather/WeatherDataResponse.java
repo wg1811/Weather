@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
 
-public record WeatherData(
+public record WeatherDataResponse(
         int id,
         double latitude,
         double longitude,
@@ -18,20 +18,4 @@ public record WeatherData(
         HourlyUnits hourlyUnits,
         DailyData daily,
         HourlyData hourly) {
-
-    public WeatherData(Coordinates coordinates, String startDate, String endDate) {
-        this(0,
-                coordinates.lat(),
-                coordinates.lng(),
-                null,
-                0.0,
-                0.0,
-                0.0,
-                LocalDateTime.parse(startDate),
-                LocalDateTime.parse(endDate),
-                null,
-                null,
-                null,
-                null);
-    }
 }
