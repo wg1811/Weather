@@ -2,7 +2,10 @@ package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.http.HttpStatusCode;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -13,7 +16,8 @@ public class WeatherService {
         this.webClient = webClientBuilder.baseUrl("https://archive-api.open-meteo.com/v1/archive").build();
     }
 
-    public Mono<WeatherData> GetHistoricalWeather (Coordinates coordinates, String startDate, String endDate) {
+
+    public Mono<WeatherData> getWeather(Coordinates coordinates, String startDate, String endDate) {
         return webClient.get()
             .uri(uriBuilder -> uriBuilder
                 .queryParam("latitude", coordinates.lat())
@@ -25,12 +29,27 @@ public class WeatherService {
                 .queryParam("end_date", endDate)
                 .build())
             .retrieve()
+            .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
+                if (response.statusCode().equals(HttpStatusCode.valueOf(404))) {
+                    return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "No weather data found for the given coordinates."));
+                } else {
+                    return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get weather data."));
+                }
+            })
             .bodyToMono(WeatherData.class);
     }
-
-// This will call the client to get the weather data. With WebClient? Or RestTemplate?
-    //public WeatherData fetchWeatherData(double lat, double lon, String startDate, String endDate) {
-        // Implementation
+    public void GetWeatherTest (Coordinates coordinates, String startDate, String endDate) {
+        String url = "https://archive-api.open-meteo.com/v1/archive" +
+                "?latitude=" + coordinates.lat() +
+                "&longitude=" + coordinates.lng() +
+                "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,pressure_msl_mean,apparent_temperature_max,apparent_temperature_min,precipitation_hours,sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration" +
+                "&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation,weather_code,pressure_msl,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,soil_temperature_0cm,soil_moisture_0_1cm" +
+                "&timezone=auto" +
+                "&start_date=" + startDate +
+                "&end_date=" + endDate;
+    
+        System.out.println("Requesting Open-Meteo: " + url);  // Debugging output
+    }
 }
 
 

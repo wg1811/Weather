@@ -53,7 +53,31 @@ public class WeatherController {
             return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
         });
     }
+
+    @GetMapping("/getweather")
+    public Mono<ResponseEntity<WeatherData>> getWeather(@RequestParam String location, @RequestParam String startDate, @RequestParam String endDate) {
+        return geocodeService.getCoordinates(location)
+            .flatMap(coordinates -> weatherService.GetHistoricalWeather(coordinates, startDate, endDate))
+            .map(weather -> ResponseEntity.ok(weather))
+            .onErrorResume(e -> {
+                e.printStackTrace();
+                if (e instanceof ResponseStatusException) {
+                    ResponseStatusException rse = (ResponseStatusException) e;
+                    return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
+                }
+                return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
+            });
+    }
 }
+
+@GetMapping("/testgetweather")
+    public void testGetWeather(@RequestParam String location, @RequestParam String startDate, @RequestParam String endDate) {
+        Mono<Coordinates> coordinates = geocodeService.getCoordinates(location); 
+        coordinates.subscribe(coords -> weatherService.GetWeatherTest(coords, startDate, endDate));
+    }
+}
+
+
     // @GetMapping("/weatherlist")    
     // String listWeather() {
     //     return weatherRepository.listWeather().toString();
