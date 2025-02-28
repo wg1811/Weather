@@ -45,11 +45,13 @@ public class WeatherController {
                 });
     }
 
+    // Test with something like this:
+    // http://localhost:8080/api/getweather?location=oslo&startDate=2003-02-01&endDate=2003-02-08
     @GetMapping("/getweather")
     public Mono<ResponseEntity<WeatherData>> getWeather(@RequestParam String location, @RequestParam String startDate,
             @RequestParam String endDate) {
         return geocodeService.getCoordinates(location)
-                .flatMap(coordinates -> weatherService.GetHistoricalWeather(coordinates, startDate, endDate))
+                .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
                 .map(weather -> ResponseEntity.ok(weather))
                 .onErrorResume(e -> {
                     e.printStackTrace();
@@ -60,8 +62,6 @@ public class WeatherController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
                 });
     }
-
-}
 
     @GetMapping("/testgetweather")
     public void testGetWeather(@RequestParam String location, @RequestParam String startDate,

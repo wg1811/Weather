@@ -16,7 +16,7 @@ public class WeatherService {
         this.webClient = webClientBuilder.baseUrl("https://archive-api.open-meteo.com/v1/archive").build();
     }
 
-    public Mono<WeatherData> getWeather(Coordinates coordinates, String startDate, String endDate) {
+    public Mono<WeatherData> getHistoricalWeather(Coordinates coordinates, String startDate, String endDate) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("latitude", coordinates.lat())
