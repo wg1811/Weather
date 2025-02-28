@@ -10,14 +10,17 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class WeatherService {
-    private final WebClient webClient;
+    private final WebClient webClientHistory;
+    private final WebClient webClientForecast;
 
     public WeatherService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://archive-api.open-meteo.com/v1/archive").build();
+        this.webClientHistory = webClientBuilder.baseUrl("https://archive-api.open-meteo.com/v1/archive").build();
+        this.webClientForecast = webClientBuilder.baseUrl("https://api.open-meteo.com/v1/forecast").build();
     }
 
-    public Mono<WeatherData> getWeather(Coordinates coordinates, String startDate, String endDate) {
-        return webClient.get()
+
+    public Mono<WeatherData> getHistoricalWeather(Coordinates coordinates, String startDate, String endDate) {
+        return webClientHistory.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("latitude", coordinates.lat())
                         .queryParam("longitude", coordinates.lng())
@@ -41,6 +44,34 @@ public class WeatherService {
                 })
                 .bodyToMono(WeatherData.class);
     }
+
+
+    // Getting Weather Forecast Data from Open-Meteo
+    public Mono<WeatherData> getWeatherForecast(Coordinates coordinates) {
+        return webClientForecast.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("latitude", coordinates.lat())
+                        .queryParam("longitude", coordinates.lng())
+                        .queryParam("current", "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m")
+                        .queryParam("hourly", "temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,uv_index,is_day,sunshine_duration")
+                        .queryParam("daily", "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant")
+                        .queryParam("forecast_days", 16)
+                        .queryParam("models", "best_match")
+                        .queryParam("timezone", "auto") // Kept from original implementation
+                        .build())
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
+                    if (response.statusCode().equals(HttpStatusCode.valueOf(404))) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "No weather data found for the given coordinates."));
+                    } else {
+                        return Mono.error(
+                                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get weather data."));
+                    }
+                })
+                .bodyToMono(WeatherData.class);
+    }
+    // End of getting forecast
 
     public void GetWeatherTest(Coordinates coordinates, String startDate, String endDate) {
         String url = "https://archive-api.open-meteo.com/v1/archive" +
