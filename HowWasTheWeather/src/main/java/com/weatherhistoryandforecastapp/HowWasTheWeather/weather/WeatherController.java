@@ -45,12 +45,12 @@ public class WeatherController {
                 });
     }
 
-
     // Getting Historical Weather Data from Open-Meteo
     @GetMapping("/getweather")
     public Mono<ResponseEntity<WeatherData>> getWeather(@RequestParam String location, @RequestParam String startDate,
             @RequestParam String endDate) {
         return geocodeService.getCoordinates(location)
+                .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
                 .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
                 .map(weather -> ResponseEntity.ok(weather))
                 .onErrorResume(e -> {
@@ -78,8 +78,6 @@ public class WeatherController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
                 });
     }
-
-
 
     @GetMapping("/testgetweather")
     public void testGetWeather(@RequestParam String location, @RequestParam String startDate,
