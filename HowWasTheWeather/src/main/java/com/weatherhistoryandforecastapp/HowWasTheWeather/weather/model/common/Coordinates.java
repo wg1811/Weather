@@ -1,4 +1,4 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common;
 
 public record Coordinates(double lat, double lng) {
     // Compact constructor (for additional logic, if needed)

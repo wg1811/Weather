@@ -1,4 +1,4 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.WeatherService;
 
 import reactor.core.publisher.Mono;
 
@@ -31,8 +37,7 @@ public class WeatherController {
     }
 
     @GetMapping("/getcoordinates")
-    public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String location) { // Or do I used
-                                                                                             // @RequestBody?
+    public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String location) {
         return geocodeService.getCoordinates(location)
                 .map(coordinates -> ResponseEntity.ok(coordinates))
                 .onErrorResume(e -> {
@@ -50,7 +55,6 @@ public class WeatherController {
     public Mono<ResponseEntity<WeatherData>> getWeather(@RequestParam String location, @RequestParam String startDate,
             @RequestParam String endDate) {
         return geocodeService.getCoordinates(location)
-                .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
                 .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
                 .map(weather -> ResponseEntity.ok(weather))
                 .onErrorResume(e -> {

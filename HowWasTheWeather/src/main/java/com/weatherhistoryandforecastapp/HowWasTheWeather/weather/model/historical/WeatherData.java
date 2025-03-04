@@ -1,6 +1,8 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical;
 
 import java.time.LocalDateTime;
+
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
 
 import jakarta.validation.constraints.NotNull;
 

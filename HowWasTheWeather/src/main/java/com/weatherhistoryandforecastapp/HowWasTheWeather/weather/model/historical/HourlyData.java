@@ -1,22 +1,22 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical;
 
 public record HourlyData(
-    String[] time,
-    Double[] temperature2m,
-    int[] weatherCode,
-    Double[] relativeHumidity2m,
-    Double[] dewPoint2m,
-    Double[] apparentTemperature,
-    Double[] precipitation,
-    Double[] pressureMsl,
-    Double[] cloudCover,
-    Double[] visibility,
-    Double[] windSpeed10m,
-    Integer[] windDirection10m,
-    Double[] windGusts10m,
-    Double[] soilTemperature0cm,
-    Double[] soilMoisture0_1cm
-) { }
+        String[] time,
+        Double[] temperature2m,
+        int[] weatherCode,
+        Double[] relativeHumidity2m,
+        Double[] dewPoint2m,
+        Double[] apparentTemperature,
+        Double[] precipitation,
+        Double[] pressureMsl,
+        Double[] cloudCover,
+        Double[] visibility,
+        Double[] windSpeed10m,
+        Integer[] windDirection10m,
+        Double[] windGusts10m,
+        Double[] soilTemperature0cm,
+        Double[] soilMoisture0_1cm) {
+}
 
 class HourlyUnits {
     public String time = "";

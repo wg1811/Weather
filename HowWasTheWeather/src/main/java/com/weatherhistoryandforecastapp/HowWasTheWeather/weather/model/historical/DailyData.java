@@ -1,23 +1,23 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical;
 
 public record DailyData(
-    String[] time,
-    int[] weatherCode,
-    Double[] temperature2mMax,
-    Double[] temperature2mMin,
-    Double[] apparentTemperatureMax,
-    Double[] apparentTemperatureMin,
-    Double[] precipitationSum,
-    Double[] precipitationHours,
-    Double[] pressureMslMean,
-    String[] sunrise,
-    String[] sunset,
-    Double[] windSpeed10mMax,
-    Double[] windGusts10mMax,
-    Integer[] windDirection10mDominant,
-    Double[] shortwaveRadiationSum,
-    Double[] et0FaoEvapotranspiration
-) { }
+        String[] time,
+        int[] weatherCode,
+        Double[] temperature2mMax,
+        Double[] temperature2mMin,
+        Double[] apparentTemperatureMax,
+        Double[] apparentTemperatureMin,
+        Double[] precipitationSum,
+        Double[] precipitationHours,
+        Double[] pressureMslMean,
+        String[] sunrise,
+        String[] sunset,
+        Double[] windSpeed10mMax,
+        Double[] windGusts10mMax,
+        Integer[] windDirection10mDominant,
+        Double[] shortwaveRadiationSum,
+        Double[] et0FaoEvapotranspiration) {
+}
 
 class DailyUnits {
     public String weatherCode = "";
