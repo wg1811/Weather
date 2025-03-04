@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
@@ -69,7 +70,7 @@ public class WeatherController {
 
     // Getting Forecast Weather Data from Open-Meteo
     @GetMapping("/getforecast")
-    public Mono<ResponseEntity<WeatherData>> getForecast(@RequestParam String location) {
+    public Mono<ResponseEntity<ForecastDTO>> getForecast(@RequestParam String location) {
         return geocodeService.getCoordinates(location)
                 .flatMap(coordinates -> weatherService.getWeatherForecast(coordinates))
                 .map(weather -> ResponseEntity.ok(weather))

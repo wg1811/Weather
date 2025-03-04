@@ -1,15 +1,16 @@
 package com.weatherhistoryandforecastapp.HowWasTheWeather;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class WeatherApp {
 
-	// This is how you add a logger. See docs for info on different levels
-	private static final Logger log = LoggerFactory.getLogger(WeatherApp.class);
+	// // I don't know how logging works, but this is how the guide started it
+	// (above and below)
+	// private static final Logger log = LoggerFactory.getLogger(WeatherApp.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(WeatherApp.class, args);
