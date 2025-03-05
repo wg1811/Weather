@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.DailyForecastDTO;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.HourlyForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.forecast.ForecastData;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
 
 import reactor.core.publisher.Mono;
@@ -53,7 +57,7 @@ public class WeatherService {
         }
 
         // Getting Weather Forecast Data from Open-Meteo
-        public Mono<WeatherData> getWeatherForecast(Coordinates coordinates) {
+        public Mono<ForecastDTO> getWeatherForecast(Coordinates coordinates) {
                 return webClientForecast.get()
                                 .uri(uriBuilder -> uriBuilder
                                                 .queryParam("latitude", coordinates.lat())
@@ -82,9 +86,37 @@ public class WeatherService {
                                                                                                 "Failed to get weather data."));
                                                         }
                                                 })
-                                .bodyToMono(WeatherData.class);
+                                .bodyToMono(ForecastData.class)
+                                .map(this::convertToForecastDTO);
         }
         // End of getting forecast
+
+        // Convert ForecastData to ForecastDTO
+        private ForecastDTO convertToForecastDTO(ForecastData forecastData) {
+                var hourlyForecastDTO = new HourlyForecastDTO(forecastData.hourly().time(),
+                                forecastData.hourly().temperature_2m(), forecastData.hourly().apparent_temperature(),
+                                forecastData.hourly().precipitation_probability(),
+                                forecastData.hourly().precipitation(),
+                                forecastData.hourly().rain(), forecastData.hourly().showers(),
+                                forecastData.hourly().snowfall(),
+                                forecastData.hourly().weather_code(), forecastData.hourly().cloud_cover(),
+                                forecastData.hourly().wind_speed_10m(), forecastData.hourly().wind_direction_10m());
+
+                var dailyForecastDTO = new DailyForecastDTO(forecastData.daily().time(),
+                                forecastData.daily().weather_code(),
+                                forecastData.daily().temperature_2m_max(), forecastData.daily().temperature_2m_min(),
+                                forecastData.daily().apparent_temperature_max(),
+                                forecastData.daily().apparent_temperature_min(),
+                                forecastData.daily().sunrise(), forecastData.daily().sunset(),
+                                forecastData.daily().precipitation_sum(), forecastData.daily().rain_sum(),
+                                forecastData.daily().showers_sum(), forecastData.daily().snowfall_sum(),
+                                forecastData.daily().precipitation_probability_max(),
+                                forecastData.daily().wind_speed_10m_max(), forecastData.daily().wind_gusts_10m_max(),
+                                forecastData.daily().wind_direction_10m_dominant());
+
+                return new ForecastDTO(forecastData.requestTime(), forecastData.latitude(), forecastData.longitude(),
+                                hourlyForecastDTO, dailyForecastDTO);
+        }
 
         public void GetWeatherTest(Coordinates coordinates, String startDate, String endDate) {
                 String url = "https://archive-api.open-meteo.com/v1/archive" +
