@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.forecast.ForecastData;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
@@ -38,8 +38,7 @@ public class WeatherController {
     }
 
     @GetMapping("/getcoordinates")
-    public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String location) { // Or do I used
-                                                                                             // @RequestBody?
+    public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String location) {
         return geocodeService.getCoordinates(location)
                 .map(coordinates -> ResponseEntity.ok(coordinates))
                 .onErrorResume(e -> {
@@ -71,7 +70,7 @@ public class WeatherController {
 
     // Getting Forecast Weather Data from Open-Meteo
     @GetMapping("/getforecast")
-    public Mono<ResponseEntity<ForecastData>> getForecast(@RequestParam String location) {
+    public Mono<ResponseEntity<ForecastDTO>> getForecast(@RequestParam String location) {
         return geocodeService.getCoordinates(location)
                 .flatMap(coordinates -> weatherService.getWeatherForecast(coordinates))
                 .map(forecast -> ResponseEntity.ok(forecast))
