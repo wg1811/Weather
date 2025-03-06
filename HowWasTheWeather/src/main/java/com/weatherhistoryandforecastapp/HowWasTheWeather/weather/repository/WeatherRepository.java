@@ -1,23 +1,26 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import jakarta.annotation.PostConstruct;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
+
+//import jakarta.annotation.PostConstruct;  // This was to populate the list with some initial data.  (and is the wrong import? should be using a spring version?)
 
 @Repository
 public class WeatherRepository {
+
+    private List<WeatherData> weatherList = new ArrayList<>();
     //I'm not sure how best to store weather data.  I'm going to try a list for now.
    
 
-    // // I think this will be called from the WeatherServices class.
-    // Weather create(Weather weather) {
-    //     weatherList.add(weather);
-    //     return weather;
-    // }
+    // I think this will be called from the WeatherServices class.
+    WeatherData create(WeatherData weather) {
+        weatherList.add(weather);
+        return weather;
+    }
 
 
     // // This isn't going to work like this.  You need to find the weather object in the list and update it.

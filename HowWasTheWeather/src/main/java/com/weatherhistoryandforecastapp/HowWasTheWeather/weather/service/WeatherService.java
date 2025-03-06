@@ -1,10 +1,14 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.forecast.ForecastData;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
 
 import reactor.core.publisher.Mono;
 
@@ -20,17 +24,22 @@ public class WeatherService {
 
     public Mono<WeatherData> getHistoricalWeather(Coordinates coordinates, String startDate, String endDate) {
         return webClientHistory.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("latitude", coordinates.lat())
-                        .queryParam("longitude", coordinates.lng())
-                        .queryParam("daily",
-                                "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,pressure_msl_mean,apparent_temperature_max,apparent_temperature_min,precipitation_hours,sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration")
-                        .queryParam("hourly",
-                                "temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation,weather_code,pressure_msl,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,soil_temperature_0cm,soil_moisture_0_1cm")
-                        .queryParam("timezone", "auto")
-                        .queryParam("start_date", startDate)
-                        .queryParam("end_date", endDate)
-                        .build())
+        .uri(uriBuilder -> uriBuilder
+        .queryParam("latitude", coordinates.lat())
+        .queryParam("longitude", coordinates.lng())
+        .queryParam("start_date", "2025-02-16") 
+        .queryParam("end_date", "2025-02-20")   
+        .queryParam("hourly",
+                "temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation,rain,snowfall," +
+                "snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,wind_speed_10m," +
+                "wind_direction_10m,is_day,sunshine_duration")
+        .queryParam("daily",
+                "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max," +
+                "apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration," +
+                "precipitation_sum,rain_sum,snowfall_sum,precipitation_hours,wind_speed_10m_max," +
+                "wind_gusts_10m_max,wind_direction_10m_dominant")
+        .queryParam("timezone", "auto") 
+        .build())
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
                     if (response.statusCode().equals(HttpStatusCode.valueOf(404))) {
@@ -45,21 +54,21 @@ public class WeatherService {
     }
 
     // Getting Weather Forecast Data from Open-Meteo
-    public Mono<WeatherData> getWeatherForecast(Coordinates coordinates) {
+    public Mono<ForecastData> getWeatherForecast(Coordinates coordinates) {
         return webClientForecast.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("latitude", coordinates.lat())
                         .queryParam("longitude", coordinates.lng())
                         .queryParam("current",
-                                "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m")
+                                "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m")
                         .queryParam("hourly",
-                                "temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,uv_index,is_day,sunshine_duration")
+                                "temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,is_day,sunshine_duration,cape,freezing_level_height")
                         .queryParam("daily",
-                                "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant")
+                                "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant")
                         .queryParam("forecast_days", 16)
                         .queryParam("models", "best_match")
-                        .queryParam("timezone", "auto") // Kept from original implementation
-                        .build())
+                        .queryParam("timezone", "auto")
+                        .build())    
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
                     if (response.statusCode().equals(HttpStatusCode.valueOf(404))) {
@@ -70,7 +79,7 @@ public class WeatherService {
                                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get weather data."));
                     }
                 })
-                .bodyToMono(WeatherData.class);
+                .bodyToMono(ForecastData.class);
     }
     // End of getting forecast
 

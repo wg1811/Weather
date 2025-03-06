@@ -1,4 +1,4 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.weather;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical;
 
 public record DailyData(
     String[] time,

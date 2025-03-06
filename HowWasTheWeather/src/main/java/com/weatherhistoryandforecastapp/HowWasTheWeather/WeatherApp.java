@@ -5,8 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.WeatherData;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
