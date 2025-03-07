@@ -8,26 +8,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.historical.WeatherData;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.ForecastService;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.WeatherService;
 
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/weather")
-public class WeatherController {
+@RequestMapping("/api/forecast")
+public class ForecastController {
 
     // private final WeatherRepository weatherRepository;
-    private final WeatherService weatherService;
+    private final ForecastService forecastService;
     private final GeocodeService geocodeService;
 
-    public WeatherController(WeatherRepository weatherRepository, WeatherService weatherService,
+    public ForecastController(WeatherRepository weatherRepository, ForecastService forecastService, WeatherService weatherService,
             GeocodeService geocodeService) {
         // this.weatherRepository = weatherRepository;
-        this.weatherService = weatherService;
         this.geocodeService = geocodeService;
+        this.forecastService = forecastService;
     }
 
     @GetMapping("/hello")
@@ -49,13 +50,12 @@ public class WeatherController {
     //             });
     // }
 
-    // Getting Historical Weather Data from Open-Meteo
-    @GetMapping("/getweather")
-    public Mono<ResponseEntity<WeatherData>> getWeather(@RequestParam String location, @RequestParam String startDate,
-            @RequestParam String endDate) {
+    // Getting Forecast Weather Data from Open-Meteo
+    @GetMapping("/getforecast")
+    public Mono<ResponseEntity<ForecastDTO>> getForecast(@RequestParam String location) {
         return geocodeService.getCoordinates(location)
-                .flatMap(coordinates -> weatherService.getHistoricalWeather(coordinates, startDate, endDate))
-                .map(weather -> ResponseEntity.ok(weather))
+                .flatMap(coordinates -> forecastService.getWeatherForecast(coordinates))
+                .map(forecast -> ResponseEntity.ok(forecast))
                 .onErrorResume(e -> {
                     e.printStackTrace();
                     if (e instanceof ResponseStatusException) {
