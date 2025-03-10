@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.CurrentWeatherDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.DailyForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.HourlyForecastDTO;
@@ -19,8 +20,9 @@ public class ForecastService {
         private final WebClient webClientForecast;
 
         public ForecastService(WebClient.Builder webClientBuilder) {
-                                this.webClientForecast = webClientBuilder.baseUrl("https://api.open-meteo.com/v1/forecast").build();
+                this.webClientForecast = webClientBuilder.baseUrl("https://api.open-meteo.com/v1/forecast").build();
         }
+
         // Getting Weather Forecast Data from Open-Meteo
         public Mono<ForecastDTO> getWeatherForecast(Coordinates coordinates) {
                 return webClientForecast.get()
@@ -58,6 +60,21 @@ public class ForecastService {
 
         // Convert ForecastData to ForecastDTO
         private ForecastDTO convertToForecastDTO(ForecastData forecastData) {
+                var currentWeatherDTO = new CurrentWeatherDTO(
+                                forecastData.current().time(),
+                                forecastData.current().temperature_2m(),
+                                forecastData.current().relative_humidity_2m(),
+                                forecastData.current().apparent_temperature(),
+                                forecastData.current().is_day(),
+                                forecastData.current().precipitation(),
+                                forecastData.current().rain(),
+                                forecastData.current().showers(),
+                                forecastData.current().snowfall(),
+                                forecastData.current().weather_code(),
+                                forecastData.current().cloud_cover(),
+                                forecastData.current().wind_speed_10m(),
+                                forecastData.current().wind_direction_10m(),
+                                forecastData.current().wind_gusts_10m());
                 var hourlyForecastDTO = new HourlyForecastDTO(forecastData.hourly().time(),
                                 forecastData.hourly().temperature_2m(), forecastData.hourly().apparent_temperature(),
                                 forecastData.hourly().precipitation_probability(),
@@ -79,8 +96,8 @@ public class ForecastService {
                                 forecastData.daily().wind_speed_10m_max(), forecastData.daily().wind_gusts_10m_max(),
                                 forecastData.daily().wind_direction_10m_dominant());
 
-                return new ForecastDTO(forecastData.requestTime(), forecastData.latitude(), forecastData.longitude(),
+                return new ForecastDTO(forecastData.latitude(), forecastData.longitude(), currentWeatherDTO,
                                 hourlyForecastDTO, dailyForecastDTO);
         }
 }
-        // End of converting ForecastData to ForecastDTO
+// End of converting ForecastData to ForecastDTO

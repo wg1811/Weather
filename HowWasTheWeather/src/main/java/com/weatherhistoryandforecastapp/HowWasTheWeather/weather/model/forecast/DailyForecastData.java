@@ -1,16 +1,14 @@
 package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.forecast;
 
-import java.time.LocalDateTime;
-
 public record DailyForecastData(
-        LocalDateTime[] time,
+        String[] time,
         int[] weather_code,
         double[] temperature_2m_max,
         double[] temperature_2m_min,
         double[] apparent_temperature_max,
         double[] apparent_temperature_min,
-        LocalDateTime[] sunrise,
-        LocalDateTime[] sunset,
+        String[] sunrise,
+        String[] sunset,
         double[] daylight_duration,
         double[] sunshine_duration,
         double[] uv_index_max,

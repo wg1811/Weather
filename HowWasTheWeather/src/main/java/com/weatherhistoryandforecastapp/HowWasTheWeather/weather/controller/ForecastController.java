@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.CurrentWeatherDTO;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.DailyForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.HourlyForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.ForecastService;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.WeatherService;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
 
 import reactor.core.publisher.Mono;
 
@@ -24,7 +26,7 @@ public class ForecastController {
     private final ForecastService forecastService;
     private final GeocodeService geocodeService;
 
-    public ForecastController(WeatherRepository weatherRepository, ForecastService forecastService, WeatherService weatherService,
+    public ForecastController(WeatherRepository weatherRepository, ForecastService forecastService,
             GeocodeService geocodeService) {
         // this.weatherRepository = weatherRepository;
         this.geocodeService = geocodeService;
@@ -36,19 +38,29 @@ public class ForecastController {
         return "Hello, world!";
     }
 
-    // @GetMapping("/getcoordinates")
-    // public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String location) {
-    //     return geocodeService.getCoordinates(location)
-    //             .map(coordinates -> ResponseEntity.ok(coordinates))
-    //             .onErrorResume(e -> {
-    //                 e.printStackTrace();
-    //                 if (e instanceof ResponseStatusException) {
-    //                     ResponseStatusException rse = (ResponseStatusException) e;
-    //                     return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
-    //                 }
-    //                 return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
-    //             });
-    // }
+    @GetMapping("/current")
+    public Mono<ResponseEntity<CurrentWeatherDTO>> getCurrentWeather(@RequestParam String location) {
+        return geocodeService.getCoordinates(location)
+                .flatMap(coordinates -> forecastService.getWeatherForecast(coordinates))
+                .map(forecastDTO -> ResponseEntity.ok(forecastDTO.getCurrentWeather()))
+                .onErrorResume(e -> handleError(e));
+    }
+
+    @GetMapping("/hourly")
+    public Mono<ResponseEntity<HourlyForecastDTO>> getHourlyForecast(@RequestParam String location) {
+        return geocodeService.getCoordinates(location)
+                .flatMap(coordinates -> forecastService.getWeatherForecast(coordinates))
+                .map(forecastDTO -> ResponseEntity.ok(forecastDTO.getHourlyForecast()))
+                .onErrorResume(e -> handleError(e));
+    }
+
+    @GetMapping("/daily")
+    public Mono<ResponseEntity<DailyForecastDTO>> getDailyForecast(@RequestParam String location) {
+        return geocodeService.getCoordinates(location)
+                .flatMap(coordinates -> forecastService.getWeatherForecast(coordinates))
+                .map(forecastDTO -> ResponseEntity.ok(forecastDTO.getDailyForecast()))
+                .onErrorResume(e -> handleError(e));
+    }
 
     // Getting Forecast Weather Data from Open-Meteo
     @GetMapping("/getforecast")
@@ -56,14 +68,17 @@ public class ForecastController {
         return geocodeService.getCoordinates(location)
                 .flatMap(coordinates -> forecastService.getWeatherForecast(coordinates))
                 .map(forecast -> ResponseEntity.ok(forecast))
-                .onErrorResume(e -> {
-                    e.printStackTrace();
-                    if (e instanceof ResponseStatusException) {
-                        ResponseStatusException rse = (ResponseStatusException) e;
-                        return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
-                    }
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
-                });
+                .onErrorResume(e -> handleError(e));
+    }
+
+    // Error Handling
+    private <T> Mono<ResponseEntity<T>> handleError(Throwable e) {
+        e.printStackTrace();
+        if (e instanceof ResponseStatusException) {
+            ResponseStatusException rse = (ResponseStatusException) e;
+            return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
+        }
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
     }
 }
 

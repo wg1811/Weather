@@ -34,3 +34,6 @@ build/
 
 ### Secrets ###
 **/application.properties
+
+# Node modules
+node_modules/

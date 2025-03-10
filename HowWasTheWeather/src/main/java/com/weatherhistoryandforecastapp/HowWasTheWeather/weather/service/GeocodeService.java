@@ -63,3 +63,20 @@ public class GeocodeService {
                 });
     }
 }
+
+// In case I want to use this elsewhere (was from a Controller):
+// @GetMapping("/getcoordinates")
+// public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String
+// location) {
+// return geocodeService.getCoordinates(location)
+// .map(coordinates -> ResponseEntity.ok(coordinates))
+// .onErrorResume(e -> {
+// e.printStackTrace();
+// if (e instanceof ResponseStatusException) {
+// ResponseStatusException rse = (ResponseStatusException) e;
+// return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
+// }
+// return
+// Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
+// });
+// }
