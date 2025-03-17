@@ -61,6 +61,10 @@
 
 <!-- PostgreSQL R2DBC Driver -->
 <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+</dependency>
+<dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>r2dbc-postgresql</artifactId>
 </dependency>
@@ -73,6 +77,14 @@
 <dependency>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-core</artifactId>
+</dependency>
+
+<!-- Not sure what Lombok does yet -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.24</version>
+    <scope>provided</scope>
 </dependency>
 
 		<dependency>
