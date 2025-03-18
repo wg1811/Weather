@@ -3,33 +3,84 @@ package com.weatherhistoryandforecastapp.HowWasTheWeather.users.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.JwtAuthenticationManager;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtAuthenticationConverter;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
 
-    public SecurityConfig(JwtAuthenticationManager authenticationManager) {
+    public SecurityConfig(JwtAuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         this.authenticationManager = authenticationManager;
+        this.tokenProvider = tokenProvider;
     }
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/login","/signup").permitAll()
-                .anyExchange().authenticated()
-                .and()
-                .authenticationManager(authenticationManager)
+                .csrf(csrf -> csrf.disable()
+                        .httpBasic(basic -> basic.disable()
+                                .formLogin(login -> login.disable()
+                                        .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+                                        .authorizeExchange(exchange -> exchange
+                                                .pathMatchers("/login", "/signup").permitAll()
+                                                .anyExchange().authenticated()))))
+                .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
+
+    @Bean
+    public AuthenticationWebFilter jwtAuthenticationFilter() {
+        AuthenticationWebFilter filter = new AuthenticationWebFilter(authenticationManager);
+        filter.setServerAuthenticationConverter(
+            new JwtAuthenticationConverter(tokenProvider));
+        return filter;
+    }
 }
+
+// package com.weatherhistoryandforecastapp.HowWasTheWeather.users.config;
+
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+// import org.springframework.security.config.web.server.ServerHttpSecurity;
+// import org.springframework.security.web.server.SecurityWebFilterChain;
+
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.JwtAuthenticationManager;
+
+// @Configuration
+// @EnableWebFluxSecurity
+// public class SecurityConfig {
+
+//     private final JwtAuthenticationManager authenticationManager;
+
+//     public SecurityConfig(JwtAuthenticationManager authenticationManager) {
+//         this.authenticationManager = authenticationManager;
+//     }
+
+//     @Bean
+//     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+//         return http
+//                 .csrf().disable()
+//                 .authorizeExchange()
+//                 .pathMatchers("/login","/signup").permitAll()
+//                 .anyExchange().authenticated()
+//                 .and()
+//                 .authenticationManager(authenticationManager)
+//                 .build();
+//     }
+// }
 
 
 

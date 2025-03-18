@@ -1,56 +1,116 @@
 package com.weatherhistoryandforecastapp.HowWasTheWeather.users.controller;
 
-
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.weatherhistoryandforecastapp.HowWasTheWeather.users.config.JwtUtil;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthRequest;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthResponse;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.User;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.JwtAuthenticationManager;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.UserService;
 
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @RestController
 public class AuthController {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtTokenProvider tokenProvider;
+    private final UserService userService;
+    private final JwtAuthenticationManager authManager;
 
-    @Autowired
-    private UserService userService;
+    public AuthController(JwtTokenProvider tokenProvider, UserService userService, 
+                          JwtAuthenticationManager authManager) {
+        this.tokenProvider = tokenProvider;
+        this.userService = userService;
+        this.authManager = authManager;
+    }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest authRequest) {
-        return userService.findByEmail(authRequest.getEmail())
-                .map(userDetails -> {
-                    if (userDetails.getPassword().equals(authRequest.getPassword())) {
-                        return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(authRequest.getEmail())));
-                    } else {
-                        throw new BadCredentialsException("Invalid username or password");
-                    }
-                }).switchIfEmpty(Mono.error(new BadCredentialsException("Invalid username or password")));
-    }
-    @PostMapping("/signup")
-    public Mono<ResponseEntity<String>> signup(@RequestBody User user) {
-    // Encrypt password before saving
-    user.setPassword(user.getPassword());
-    return userService.save(user)
-            .map(savedUser -> ResponseEntity.ok("User signed up successfully"));
+    public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
+        return authManager.authenticateWithCredentials(request.getEmail(), request.getPassword())
+            .map(authentication -> {
+                String token = tokenProvider.generateToken(authentication);
+                return ResponseEntity.ok(new AuthResponse(token));
+            })
+            .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid credentials")));
     }
 
-    @GetMapping("/protected")
-    public Mono<ResponseEntity<String>> protectedEndpoint() {
-        return Mono.just(ResponseEntity.ok("You have accessed a protected endpoint!"));
+    @PostMapping("/signup")
+    public Mono<ResponseEntity<AuthResponse>> signup(@Valid @RequestBody AuthRequest request) {
+        return userService.findByEmail(request.getEmail())
+            .flatMap(existingUser -> Mono.error(new RuntimeException("Email already in use")))
+            .switchIfEmpty(Mono.defer(() -> {
+                User newUser = new User(request.getEmail(), request.getPassword());
+                return userService.save(newUser);
+            }))
+            .flatMap(savedUser -> authManager.authenticateWithCredentials(request.getEmail(), request.getPassword()))
+            .map(authentication -> {
+                String token = tokenProvider.generateToken(authentication);
+                return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+            });
     }
 }
+
+
+// package com.weatherhistoryandforecastapp.HowWasTheWeather.users.controller;
+
+
+
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.security.authentication.BadCredentialsException;
+// import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.RestController;
+
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.config.JwtUtil;
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthRequest;
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthResponse;
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.User;
+// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.UserService;
+
+// import reactor.core.publisher.Mono;
+
+// @RestController
+// public class AuthController {
+
+//     @Autowired
+//     private JwtUtil jwtUtil;
+
+//     @Autowired
+//     private UserService userService;
+
+//     @PostMapping("/login")
+//     public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest authRequest) {
+//         return userService.findByEmail(authRequest.getEmail())
+//                 .map(userDetails -> {
+//                     if (userDetails.getPassword().equals(authRequest.getPassword())) {
+//                         return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(authRequest.getEmail())));
+//                     } else {
+//                         throw new BadCredentialsException("Invalid username or password");
+//                     }
+//                 }).switchIfEmpty(Mono.error(new BadCredentialsException("Invalid username or password")));
+//     }
+//     @PostMapping("/signup")
+//     public Mono<ResponseEntity<String>> signup(@RequestBody User user) {
+//     // Encrypt password before saving
+//     user.setPassword(user.getPassword());
+//     return userService.save(user)
+//             .map(savedUser -> ResponseEntity.ok("User signed up successfully"));
+//     }
+
+//     @GetMapping("/protected")
+//     public Mono<ResponseEntity<String>> protectedEndpoint() {
+//         return Mono.just(ResponseEntity.ok("You have accessed a protected endpoint!"));
+//     }
+// }
 
 
 
