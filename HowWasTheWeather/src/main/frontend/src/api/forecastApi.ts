@@ -1,11 +1,66 @@
 import axios from "axios";
 
 const API_BASE_URL = "/api/forecast";
+const AUTH_BASE_URL = "/login";
+
+// Auth stuff
+const api = axios.create({
+  baseURL: API_BASE_URL, //  When I add historical weather, need to add a new base URL?
+});
+
+// Attaches jwt
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      console.log("Unauthorized, redirecting to login"); // Need to add a redirect here
+    }
+    return Promise;
+  }
+);
 
 export const forecastApi = {
+  // Login stuff
+  login: async (email: string, password: string) => {
+    console.log("Starting login... email:", email, "password:", password);
+    console.log("AUTH_BASE_URL:", AUTH_BASE_URL);
+    try {
+      const response = await axios.post(AUTH_BASE_URL, { email, password });
+      console.log("Login response:", response);
+      const token = response.data.token; // I'm pretty sure this is the right structure: "token": "eyJhb...
+      localStorage.setItem("token", token);
+      return token;
+    } catch (error) {
+      console.error("Error logging in:", error);
+      throw error;
+    }
+  },
+
+  getForecast: async (location: string) => {
+    console.log("Starting Get Forecast...");
+    try {
+      const response = await api.get("/getforecast", {
+        params: { location },
+      });
+      console.log("Get Forecast response:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching full forecast:", error);
+      throw error;
+    }
+  },
   getCurrentWeather: async (location: string) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/current`, {
+        // does this need to be api.get, too?
         params: { location },
       });
       return response.data;
@@ -18,6 +73,7 @@ export const forecastApi = {
   getHourlyForecast: async (location: string) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/hourly`, {
+        // does this need to be api.get, too?
         params: { location },
       });
       return response.data;
@@ -30,6 +86,7 @@ export const forecastApi = {
   getDailyForecast: async (location: string) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/daily`, {
+        // does this need to be api.get, too?
         params: { location },
       });
       return response.data;

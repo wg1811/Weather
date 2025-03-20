@@ -4,7 +4,7 @@ import { CurrentWeatherDTO } from '../../types/weather';
 type WeatherMapping = {
   [key: number]: { description: string; icon: string };
 };
-
+//  Need to abstract this as it repeats in multiple components.
 const getWeatherInfo = (code: number): { description: string; icon: string } => {
   const weatherMapping: WeatherMapping = {
     0: { description: 'Clear sky', icon: '☀️' },

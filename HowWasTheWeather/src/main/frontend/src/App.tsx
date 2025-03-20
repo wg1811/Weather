@@ -1,11 +1,16 @@
-//import React from 'react'; (not used?)
-import './App.css'
-import ForecastPage from './pages/ForecastPage';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// import './App.css'  // Using tailwind, so no need for this
+import TestPage from './pages/TestPage';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <ForecastPage />
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<TestPage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

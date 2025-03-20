@@ -1,13 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
+  // I'm not sure the css: does anything, but I get this error in index.css: Unknown at rule @tailwindcss(unknownAtRules)
+  // So I added this line to try to fix it. But it didn't work.
+  css: {
+    postcss: "./postcss.config.js",
+  },
   server: {
     proxy: {
       "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/login": {
         target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,

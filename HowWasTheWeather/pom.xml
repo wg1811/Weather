@@ -74,10 +74,18 @@
     <artifactId>postgresql</artifactId>
     <scope>runtime</scope>
 </dependency>
+<!-- This didn't work for some reason...
 <dependency>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-core</artifactId>
+	<version>11.4.0</version>
+</dependency> -->
+<!-- Trying this instead: -->
+<dependency>
+    <groupId>org.liquibase</groupId>
+    <artifactId>liquibase-core</artifactId>
 </dependency>
+
 
 <!-- Not sure what Lombok does yet -->
 <dependency>

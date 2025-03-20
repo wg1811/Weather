@@ -17,8 +17,7 @@ public class JwtTokenProvider {
     private String jwtSecret;
 
     @Value("${app.jwt.expiration}")
-    private long jwtExpirationMs; // have to set this. Should I just do it here? Make it billions of ms, or
-                                  // somethign?
+    private long jwtExpirationMs; // Set in application.properties (same as jwtSecret)
 
     public String generateToken(Authentication authentication) {
         Date now = new Date();
