@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LocationSearch from "../components/common/LocationSearch";
-import CurrentWeather from "../components/weather/CurrentWeather";
+import CurrentWeather from "../components/weather/CurrentWeather(OLD)";
 import { forecastApi } from "../api/forecastApi";
 //import { useAuth } from "../contexts/AuthContext";
 

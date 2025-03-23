@@ -24,43 +24,43 @@ public class AuthController {
     private final UserService userService;
     private final JwtAuthenticationManager authManager;
 
-    public AuthController(JwtTokenProvider tokenProvider, UserService userService, 
-                          JwtAuthenticationManager authManager) {
+    public AuthController(JwtTokenProvider tokenProvider, UserService userService,
+            JwtAuthenticationManager authManager) {
         this.tokenProvider = tokenProvider;
         this.userService = userService;
         this.authManager = authManager;
     }
 
-    @PostMapping("/login")
+    // added /api to the path to differentiate from frontend server /login? I don't
+    // understand this stuff yet.
+    @PostMapping("/api/login")
     public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         return authManager.authenticateWithCredentials(request.getEmail(), request.getPassword())
-            .map(authentication -> {
-                String token = tokenProvider.generateToken(authentication);
-                return ResponseEntity.ok(new AuthResponse(token));
-            })
-            .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid credentials")));
+                .map(authentication -> {
+                    String token = tokenProvider.generateToken(authentication);
+                    return ResponseEntity.ok(new AuthResponse(token));
+                })
+                .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid credentials")));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/api/signup")
     public Mono<ResponseEntity<AuthResponse>> signup(@Valid @RequestBody AuthRequest request) {
         return userService.findByEmail(request.getEmail())
-            .flatMap(existingUser -> Mono.error(new RuntimeException("Email already in use")))
-            .switchIfEmpty(Mono.defer(() -> {
-                User newUser = new User(request.getEmail(), request.getPassword());
-                return userService.save(newUser);
-            }))
-            .flatMap(savedUser -> authManager.authenticateWithCredentials(request.getEmail(), request.getPassword()))
-            .map(authentication -> {
-                String token = tokenProvider.generateToken(authentication);
-                return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
-            });
+                .flatMap(existingUser -> Mono.error(new RuntimeException("Email already in use")))
+                .switchIfEmpty(Mono.defer(() -> {
+                    User newUser = new User(request.getEmail(), request.getPassword());
+                    return userService.save(newUser);
+                }))
+                .flatMap(
+                        savedUser -> authManager.authenticateWithCredentials(request.getEmail(), request.getPassword()))
+                .map(authentication -> {
+                    String token = tokenProvider.generateToken(authentication);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+                });
     }
 }
 
-
 // package com.weatherhistoryandforecastapp.HowWasTheWeather.users.controller;
-
-
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;
@@ -70,49 +70,55 @@ public class AuthController {
 // import org.springframework.web.bind.annotation.RequestBody;
 // import org.springframework.web.bind.annotation.RestController;
 
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.config.JwtUtil;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthRequest;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthResponse;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.config.JwtUtil;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthRequest;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthResponse;
 // import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.User;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.UserService;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.UserService;
 
 // import reactor.core.publisher.Mono;
 
 // @RestController
 // public class AuthController {
 
-//     @Autowired
-//     private JwtUtil jwtUtil;
+// @Autowired
+// private JwtUtil jwtUtil;
 
-//     @Autowired
-//     private UserService userService;
+// @Autowired
+// private UserService userService;
 
-//     @PostMapping("/login")
-//     public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest authRequest) {
-//         return userService.findByEmail(authRequest.getEmail())
-//                 .map(userDetails -> {
-//                     if (userDetails.getPassword().equals(authRequest.getPassword())) {
-//                         return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(authRequest.getEmail())));
-//                     } else {
-//                         throw new BadCredentialsException("Invalid username or password");
-//                     }
-//                 }).switchIfEmpty(Mono.error(new BadCredentialsException("Invalid username or password")));
-//     }
-//     @PostMapping("/signup")
-//     public Mono<ResponseEntity<String>> signup(@RequestBody User user) {
-//     // Encrypt password before saving
-//     user.setPassword(user.getPassword());
-//     return userService.save(user)
-//             .map(savedUser -> ResponseEntity.ok("User signed up successfully"));
-//     }
-
-//     @GetMapping("/protected")
-//     public Mono<ResponseEntity<String>> protectedEndpoint() {
-//         return Mono.just(ResponseEntity.ok("You have accessed a protected endpoint!"));
-//     }
+// @PostMapping("/login")
+// public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest
+// authRequest) {
+// return userService.findByEmail(authRequest.getEmail())
+// .map(userDetails -> {
+// if (userDetails.getPassword().equals(authRequest.getPassword())) {
+// return ResponseEntity.ok(new
+// AuthResponse(jwtUtil.generateToken(authRequest.getEmail())));
+// } else {
+// throw new BadCredentialsException("Invalid username or password");
+// }
+// }).switchIfEmpty(Mono.error(new BadCredentialsException("Invalid username or
+// password")));
+// }
+// @PostMapping("/signup")
+// public Mono<ResponseEntity<String>> signup(@RequestBody User user) {
+// // Encrypt password before saving
+// user.setPassword(user.getPassword());
+// return userService.save(user)
+// .map(savedUser -> ResponseEntity.ok("User signed up successfully"));
 // }
 
-
+// @GetMapping("/protected")
+// public Mono<ResponseEntity<String>> protectedEndpoint() {
+// return Mono.just(ResponseEntity.ok("You have accessed a protected
+// endpoint!"));
+// }
+// }
 
 // ===================
 
@@ -121,23 +127,31 @@ public class AuthController {
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;
-// import org.springframework.security.authentication.ReactiveAuthenticationManager;
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+// import
+// org.springframework.security.authentication.ReactiveAuthenticationManager;
+// import
+// org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 // import org.springframework.security.core.Authentication;
-// import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+// import
+// org.springframework.security.core.context.ReactiveSecurityContextHolder;
 // import org.springframework.web.bind.annotation.PostMapping;
 // import org.springframework.web.bind.annotation.RequestBody;
 // import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RestController;
 
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.request.LoginRequest;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.JwtResponse;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.MessageResponse;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.services.UserDetailsImpl;
 
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.request.LoginRequest;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.JwtResponse;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.MessageResponse;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.services.UserDetailsImpl;
-
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.AuthService;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.AuthService;
 
 // import jakarta.validation.Valid;
 // import reactor.core.publisher.Mono;
@@ -146,45 +160,47 @@ public class AuthController {
 // @RequestMapping("/api/auth")
 // public class AuthController {
 
-//     @Autowired
-//     private ReactiveAuthenticationManager authenticationManager;
+// @Autowired
+// private ReactiveAuthenticationManager authenticationManager;
 
-//     @Autowired
-//     private AuthService userService;
+// @Autowired
+// private AuthService userService;
 
-//     @Autowired
-//     private JwtTokenProvider jwtUtils;
+// @Autowired
+// private JwtTokenProvider jwtUtils;
 
-//     @PostMapping("/signin")
-//     public Mono<ResponseEntity<?>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-//         return authenticationManager
-//                 .authenticate(
-//                         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()))
-//                 .flatMap(authentication -> {
-//                     // Store the authentication in the security context
-//                     return Mono.just(authentication)
-//                             .flatMap(auth -> {
-//                                 String jwt = jwtUtils.generateJwtToken(auth);
-//                                 UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-//                                 List<String> roles = userDetails.getAuthorities().stream()
-//                                         .map(item -> item.getAuthority())
-//                                         .collect(Collectors.toList());
+// @PostMapping("/signin")
+// public Mono<ResponseEntity<?>> authenticateUser(@Valid @RequestBody
+// LoginRequest loginRequest) {
+// return authenticationManager
+// .authenticate(
+// new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+// loginRequest.getPassword()))
+// .flatMap(authentication -> {
+// // Store the authentication in the security context
+// return Mono.just(authentication)
+// .flatMap(auth -> {
+// String jwt = jwtUtils.generateJwtToken(auth);
+// UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+// List<String> roles = userDetails.getAuthorities().stream()
+// .map(item -> item.getAuthority())
+// .collect(Collectors.toList());
 
-//                                 return Mono.just(ResponseEntity.ok(new JwtResponse(
-//                                         jwt,
-//                                         userDetails.getId(),
-//                                         userDetails.getEmail(),
-//                                         roles)));
-//                             })
-//                             .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
-//                 })
-//                 .onErrorResume(e -> {
-//                     // Log the error for debugging
-//                     System.err.println("Authentication error: " + e.getMessage());
-//                     return Mono.just(ResponseEntity.badRequest()
-//                             .body(new MessageResponse("Invalid email or password")));
-//                 });
-//     }
+// return Mono.just(ResponseEntity.ok(new JwtResponse(
+// jwt,
+// userDetails.getId(),
+// userDetails.getEmail(),
+// roles)));
+// })
+// .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+// })
+// .onErrorResume(e -> {
+// // Log the error for debugging
+// System.err.println("Authentication error: " + e.getMessage());
+// return Mono.just(ResponseEntity.badRequest()
+// .body(new MessageResponse("Invalid email or password")));
+// });
+// }
 // }
 
 // =========================
@@ -196,20 +212,29 @@ public class AuthController {
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;
-// import org.springframework.security.authentication.ReactiveAuthenticationManager;
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-// import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+// import
+// org.springframework.security.authentication.ReactiveAuthenticationManager;
+// import
+// org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+// import
+// org.springframework.security.core.context.ReactiveSecurityContextHolder;
 // import org.springframework.web.bind.annotation.PostMapping;
 // import org.springframework.web.bind.annotation.RequestBody;
 // import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RestController;
 
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.request.LoginRequest;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.JwtResponse;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.MessageResponse;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.services.UserDetailsImpl;
-// import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.AuthService;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.request.LoginRequest;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.JwtResponse;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.payload.response.MessageResponse;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.services.UserDetailsImpl;
+// import
+// com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.AuthService;
 
 // import jakarta.validation.Valid;
 // import reactor.core.publisher.Mono;
@@ -218,35 +243,38 @@ public class AuthController {
 // @RequestMapping("/api/auth")
 // public class AuthController {
 
-//     @Autowired
-//     private ReactiveAuthenticationManager authenticationManager;
+// @Autowired
+// private ReactiveAuthenticationManager authenticationManager;
 
-//     @Autowired
-//     private AuthService userService;
+// @Autowired
+// private AuthService userService;
 
-//     @Autowired
-//     private JwtTokenProvider jwtUtils;
+// @Autowired
+// private JwtTokenProvider jwtUtils;
 
-//     @PostMapping("/signin")
-//     public Mono<ResponseEntity<?>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-//         return authenticationManager
-//                 .authenticate(
-//                         new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()))
-//                 .map(authentication -> {
-//                     ReactiveSecurityContextHolder.withAuthentication(authentication);
-//                     String jwt = jwtUtils.generateJwtToken(authentication);
-//                     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//                     List<String> roles = userDetails.getAuthorities().stream()
-//                             .map(item -> item.getAuthority())
-//                             .collect(Collectors.toList());
+// @PostMapping("/signin")
+// public Mono<ResponseEntity<?>> authenticateUser(@Valid @RequestBody
+// LoginRequest loginRequest) {
+// return authenticationManager
+// .authenticate(
+// new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+// loginRequest.getPassword()))
+// .map(authentication -> {
+// ReactiveSecurityContextHolder.withAuthentication(authentication);
+// String jwt = jwtUtils.generateJwtToken(authentication);
+// UserDetailsImpl userDetails = (UserDetailsImpl)
+// authentication.getPrincipal();
+// List<String> roles = userDetails.getAuthorities().stream()
+// .map(item -> item.getAuthority())
+// .collect(Collectors.toList());
 
-//                     return ResponseEntity.ok(new JwtResponse(
-//                             jwt,
-//                             userDetails.getId(),
-//                             userDetails.getEmail(),
-//                             roles));
-//                 })
-//                 .onErrorResume(e -> Mono.just(ResponseEntity.badRequest()
-//                         .body(new MessageResponse("Invalid email or password"))));
-//     }
+// return ResponseEntity.ok(new JwtResponse(
+// jwt,
+// userDetails.getId(),
+// userDetails.getEmail(),
+// roles));
+// })
+// .onErrorResume(e -> Mono.just(ResponseEntity.badRequest()
+// .body(new MessageResponse("Invalid email or password"))));
+// }
 // }
