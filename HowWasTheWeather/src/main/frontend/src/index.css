@@ -4,8 +4,9 @@
 /* Tailwind seems to be working, even thought these throw a warning */
 
 :root {
+  /* Need to add dark mode later:
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(255, 255, 255, 0.87); */
   background-color: #242424;
 
   font-synthesis: none;
@@ -17,7 +18,6 @@
 body {
   margin: 0;
 }
-
 
 /* Leftover from Vite default */
 /* :root {

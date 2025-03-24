@@ -7,24 +7,27 @@ interface CurrentWeatherCardProps {
   locationName: string;
 }
 
-const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ forecastData, locationName }) => {
+const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
+  forecastData,
+  locationName,
+}) => {
   // Format date for display
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
     });
   };
 
   // Format time for display
   const formatTime = (timeString: string): string => {
     const date = new Date(timeString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit', 
-      hour12: true 
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
@@ -40,8 +43,8 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ forecastData, l
           <div>
             <h2 className="text-2xl font-bold">{locationName}</h2>
             <p className="text-sm opacity-90">
-              {formatDate(forecastData.currentDTO.time)} • 
-              Updated {formatTime(forecastData.currentDTO.time)}
+              {formatDate(forecastData.currentDTO.time)} • Updated{" "}
+              {formatTime(forecastData.currentDTO.time)}
             </p>
           </div>
           <div className="flex items-center mt-4 md:mt-0">
@@ -53,13 +56,16 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ forecastData, l
                 {Math.round(forecastData.currentDTO.temperature_2m)}°
               </span>
               <p className="text-lg">
-                {getWeatherDetails(forecastData.currentDTO.weather_code).description}
+                {
+                  getWeatherDetails(forecastData.currentDTO.weather_code)
+                    .description
+                }
               </p>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
         <div className="text-center p-2">
           <p className="text-gray-500 text-sm">Feels Like</p>
@@ -76,7 +82,12 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ forecastData, l
         <div className="text-center p-2">
           <p className="text-gray-500 text-sm">Wind</p>
           <div className="flex items-center justify-center">
-            <span className="inline-block mr-1" style={getWindDirectionStyle(forecastData.currentDTO.wind_direction_10m)}>
+            <span
+              className="inline-block mr-1"
+              style={getWindDirectionStyle(
+                forecastData.currentDTO.wind_direction_10m
+              )}
+            >
               ↑
             </span>
             <p className="text-lg font-semibold">

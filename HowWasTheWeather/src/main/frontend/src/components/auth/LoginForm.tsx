@@ -13,11 +13,12 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     try {
       await authService.login(email, password);
       navigate("/forecast"); // Redirect to forecast page after login
     } catch (err) {
+      console.error("Signup error:", err);
       setError("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
@@ -28,17 +29,25 @@ const LoginForm: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <div className="px-6 py-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Log In</h2>
-        
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Log In
+        </h2>
+
         {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+          <div
+            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
+            role="alert"
+          >
             <p>{error}</p>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -51,9 +60,12 @@ const LoginForm: React.FC = () => {
               required
             />
           </div>
-          
+
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -66,7 +78,7 @@ const LoginForm: React.FC = () => {
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -85,10 +97,13 @@ const LoginForm: React.FC = () => {
           </div>
         </form>
       </div>
-      
+
       <div className="bg-gray-50 px-6 py-4 border-t">
         <p className="text-sm text-center text-gray-600">
-          Don't have an account? <a href="/signup" className="text-blue-500 hover:text-blue-700">Sign up</a>
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:text-blue-700">
+            Sign up
+          </a>
         </p>
       </div>
     </div>
