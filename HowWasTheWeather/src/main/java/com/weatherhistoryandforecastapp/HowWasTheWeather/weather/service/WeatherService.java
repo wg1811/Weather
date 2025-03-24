@@ -51,51 +51,6 @@ public class WeatherService {
         }
 }
 
-// class WeatherService
-// {
-// public async Task<string?> TestWeather(
-// double lat,
-// double lng,
-// string startDate,
-// string endDate
-// )
-// {
-// try
-// {
-// using var client = new HttpClient();
-// var weatherUrl =
-// $"https://archive-api.open-meteo.com/v1/archive"
-// + $"?latitude={lat}&longitude={lng}"
-// +
-// $"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,pressure_msl_mean,apparent_temperature_max,apparent_temperature_min,precipitation_hours,sunrise,sunset,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration"
-// +
-// $"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation,weather_code,pressure_msl,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,soil_temperature_0cm,soil_moisture_0_1cm"
-// + $"&timezone=auto"
-// + $"&start_date={startDate}"
-// + $"&end_date={endDate}";
-
-// var response = await client.GetAsync(weatherUrl);
-
-// return response.IsSuccessStatusCode
-// ? await response.Content.ReadAsStringAsync()
-// : null;
-// }
-// catch (Exception ex)
-// {
-// Console.WriteLine($"An error occurred: {ex.Message}");
-// return null;
-// }
-// }
-
-// public async Task<WeatherResponse?> GetHistoricalWeather(
-// double lat,
-// double lng,
-// string startDate,
-// string endDate
-// )
-// {
-// try
-// {
 // using var client = new HttpClient();
 // var weatherUrl =
 // $"https://archive-api.open-meteo.com/v1/archive"
@@ -108,43 +63,7 @@ public class WeatherService {
 // + $"&start_date={startDate:yyyy-MM-dd}"
 // + $"&end_date={endDate:yyyy-MM-dd}";
 
-// var response = await client.GetAsync(weatherUrl);
-
-// if (!response.IsSuccessStatusCode)
-// {
-// Console.WriteLine(
-// $"API request failed with status code: {response.StatusCode}"
-// );
-// return null;
-// }
-
-// var jsonResponse = await response.Content.ReadAsStringAsync();
-// Console.WriteLine($"Raw API response: {jsonResponse}"); // Is it working?
-
-// var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true
-// };
-
-// var weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(
-// jsonResponse,
-// options
-// );
-
-// if (weatherResponse == null)
-// {
-// Console.WriteLine("Failed to deserialize weather response");
-// return null;
-// }
-
-// return weatherResponse;
-// }
-// catch (Exception ex)
-// {
-// Console.WriteLine($"An error occurred: {ex.Message}");
-// return null;
-// }
-// }
-// }
-// }
+/// }
 // // This is the json response. I have to map it to the classes
 // //
 // "{\"latitude\":40.738136,\"longitude\":-74.04254,\"generationtime_ms\":0.2688169479370117,\"utc_offset_seconds\":-18000,\"timezone\":\"America/New_York\",\"timezone_abbreviation\":\"GMT-5\",\"elevation\":32.0,\"daily_units\":{\"time\":\"iso8601\",\"weather_code\":\"wmo

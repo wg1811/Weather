@@ -45,7 +45,7 @@ const LocationSearch = ({ onLocationSelect }: LocationSearchProps) => {
         </button>
       </form>
       {error && <div className="text-red-500 mt-2">{error}</div>}
-      <div className="text-sm text-gray-500 mt-1">
+      <div className="text-sm text-gray-300 mt-1">
         Enter a city name to get the current weather and forecast.
       </div>
     </div>

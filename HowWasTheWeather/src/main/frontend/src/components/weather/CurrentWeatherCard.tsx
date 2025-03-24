@@ -48,7 +48,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
             </p>
           </div>
           <div className="flex items-center mt-4 md:mt-0">
-            <span className="text-5xl mr-4">
+            <span className="text-7xl mr-4">
               {getWeatherDetails(forecastData.currentDTO.weather_code).icon}
             </span>
             <div>

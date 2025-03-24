@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LocationSearch from "../components/common/LocationSearch";
 import CurrentWeatherCard from "../components/weather/CurrentWeatherCard";
-import HourlyForecast from "../components/weather/HourlyForecast";
-import DailyForecast from "../components/weather/DailyForecast";
-import { weatherService, processDailyForecast, processHourlyForecast } from "../services/weatherService";
+import HourlyForecastCard from "../components/weather/HourlyForecastCard";
+import DailyForecastCard from "../components/weather/DailyForecastCard";
+import { weatherService, processDailyForecast, processHourlyForecast, processFullHourlyForecast } from "../services/weatherService";
 import { authService } from "../services/authService";
 import { ForecastDTO } from "../types/weather";
 
@@ -55,6 +55,7 @@ const ForecastPage: React.FC = () => {
       
       // Update state with the fetched data
       setForecastData(data);
+      console.log("Forecast Data on forecastpage:", data);
       setLocation({ 
         name: locationName,
         latitude: data.latitude,
@@ -71,7 +72,7 @@ const ForecastPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Weather Forecast</h1>
+        <h1 className="text-3xl font-bold text-blue-500">Weather Forecast</h1>
         <button 
           onClick={handleLogout}
           className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-200 rounded shadow"
@@ -107,11 +108,13 @@ const ForecastPage: React.FC = () => {
           <CurrentWeatherCard forecastData={forecastData} locationName={location.name} />
           
           {/* Hourly Forecast */}
-          <HourlyForecast hourlyData={processHourlyForecast(forecastData)} />
+          <HourlyForecastCard hourlyData={processHourlyForecast(forecastData)} />
           
           {/* Daily Forecast */}
-          <DailyForecast dailyData={processDailyForecast(forecastData)} />
-        </div>
+          <DailyForecastCard 
+          dailyData={processDailyForecast(forecastData)} 
+          hourlyData={processFullHourlyForecast(forecastData)} />
+                  </div>
       )}
     </div>
   );

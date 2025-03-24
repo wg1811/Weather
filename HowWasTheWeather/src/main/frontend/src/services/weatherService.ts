@@ -59,6 +59,29 @@ export const processHourlyForecast = (
   }));
 };
 
+// New function: Process all hourly forecast data (16 days)
+export const processFullHourlyForecast = (
+  forecastData: ForecastDTO
+): HourlyForecastEntry[] => {
+  if (!forecastData?.hourlyDTO) return [];
+
+  return forecastData.hourlyDTO.time.map((time, index) => ({
+    time,
+    temperature_2m: forecastData.hourlyDTO.temperature_2m[index],
+    apparent_temperature: forecastData.hourlyDTO.apparent_temperature[index],
+    precipitation_probability:
+      forecastData.hourlyDTO.precipitation_probability[index],
+    precipitation: forecastData.hourlyDTO.precipitation[index],
+    rain: forecastData.hourlyDTO.rain[index],
+    showers: forecastData.hourlyDTO.showers[index],
+    snowfall: forecastData.hourlyDTO.snowfall[index],
+    weather_code: forecastData.hourlyDTO.weather_code[index],
+    cloud_cover: forecastData.hourlyDTO.cloud_cover[index],
+    wind_speed_10m: forecastData.hourlyDTO.wind_speed_10m[index],
+    wind_direction_10m: forecastData.hourlyDTO.wind_direction_10m[index],
+  }));
+};
+
 // Weather service
 export const weatherService = {
   getForecast: async (locationName: string): Promise<ForecastDTO> => {
