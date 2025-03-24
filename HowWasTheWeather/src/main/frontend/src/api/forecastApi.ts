@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = "/api/forecast";
-const AUTH_BASE_URL = "/login";
+const AUTH_BASE_URL = "/api/login"; // This is dumb.  Should change or delete.
 
 // Auth stuff
 const api = axios.create({
@@ -48,7 +48,7 @@ export const forecastApi = {
   signup: async (email: string, password: string) => {
     console.log("Starting signup... email:", email, "password:", password);
     try {
-      const response = await axios.post("/signup", { email, password });
+      const response = await axios.post("/api/signup", { email, password }); // tried api instead of axios...
       console.log("Signup response:", response);
       const token = response.data.token;
       localStorage.setItem("token", token);
@@ -63,6 +63,7 @@ export const forecastApi = {
     console.log("Starting Get Forecast...");
     try {
       const response = await api.get("/getforecast", {
+        // Using api.get b/c it has token check.
         params: { location },
       });
       console.log("Get Forecast response:", response);

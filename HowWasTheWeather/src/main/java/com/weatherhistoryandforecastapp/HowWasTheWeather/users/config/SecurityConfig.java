@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 .formLogin(login -> login.disable()
                                         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                                         .authorizeExchange(exchange -> exchange
-                                                .pathMatchers("/login", "/signup").permitAll()
+                                                .pathMatchers("/api/login", "/api/signup").permitAll() // Not sure if the api/ will help with my 401 issues.
                                                 .anyExchange().authenticated())
                                         .exceptionHandling(spec -> spec
                                                 .authenticationEntryPoint((exchange, ex) -> {

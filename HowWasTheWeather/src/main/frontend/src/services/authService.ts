@@ -16,23 +16,15 @@ export const initialAuthState: AuthState = {
 
 export const authService = {
   login: async (email: string, password: string): Promise<string> => {
-    try {
-      const token = await forecastApi.login(email, password);
-      localStorage.setItem("token", token);
-      return token;
-    } catch (error) {
-      throw error;
-    }
+    const token = await forecastApi.login(email, password);
+    localStorage.setItem("token", token);
+    return token;
   },
 
   signup: async (email: string, password: string): Promise<string> => {
-    try {
-      const token = await forecastApi.signup(email, password);
-      localStorage.setItem("token", token);
-      return token;
-    } catch (error) {
-      throw error;
-    }
+    const token = await forecastApi.signup(email, password);
+    localStorage.setItem("token", token);
+    return token;
   },
 
   logout: (): void => {

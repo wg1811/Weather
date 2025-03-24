@@ -13,8 +13,8 @@ public class User {
     private Long id;
     private String email;
     private String password;
-    private Set<String> roles = new HashSet<>();
-    private LocalDateTime createdAt;
+    private String[] roles = new String[]{"USER"};
+        private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     // Constructors
@@ -51,11 +51,11 @@ public class User {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
+    public String[] getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<String> roles) {
+    public void setRoles(String[] roles) {
         this.roles = roles;
     }
 

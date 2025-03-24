@@ -12,19 +12,20 @@ const SignupForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    
+
     setLoading(true);
     setError("");
-    
+
     try {
       await authService.signup(email, password);
       navigate("/forecast"); // Redirect to forecast page after signup
     } catch (err) {
+      console.error("Signup error:", err);
       setError("Failed to create account. Please try again.");
     } finally {
       setLoading(false);
@@ -34,17 +35,25 @@ const SignupForm: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <div className="px-6 py-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Create Account</h2>
-        
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Create Account
+        </h2>
+
         {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+          <div
+            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
+            role="alert"
+          >
             <p>{error}</p>
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -57,9 +66,12 @@ const SignupForm: React.FC = () => {
               required
             />
           </div>
-          
+
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -72,9 +84,12 @@ const SignupForm: React.FC = () => {
               required
             />
           </div>
-          
+
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="confirmPassword"
+            >
               Confirm Password
             </label>
             <input
@@ -87,7 +102,7 @@ const SignupForm: React.FC = () => {
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -106,10 +121,13 @@ const SignupForm: React.FC = () => {
           </div>
         </form>
       </div>
-      
+
       <div className="bg-gray-50 px-6 py-4 border-t">
         <p className="text-sm text-center text-gray-600">
-          Already have an account? <a href="/login" className="text-blue-500 hover:text-blue-700">Log in</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500 hover:text-blue-700">
+            Log in
+          </a>
         </p>
       </div>
     </div>

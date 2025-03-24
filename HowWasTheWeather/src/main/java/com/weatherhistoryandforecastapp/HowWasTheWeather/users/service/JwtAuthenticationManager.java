@@ -13,6 +13,7 @@ import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtT
 
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,7 +40,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         String email = tokenProvider.getUsernameFromToken(authToken);
         return userService.findByEmail(email)
             .map(user -> {
-                var authorities = user.getRoles().stream()
+                var authorities = Arrays.stream(user.getRoles())
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
                 
@@ -56,7 +57,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         return userService.findByEmail(email)
             .filter(user -> passwordEncoder.matches(password, user.getPassword()))
             .map(user -> {
-                var authorities = user.getRoles().stream()
+                var authorities = Arrays.stream(user.getRoles())
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
                 
