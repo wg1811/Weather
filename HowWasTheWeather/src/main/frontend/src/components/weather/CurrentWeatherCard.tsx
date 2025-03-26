@@ -5,11 +5,13 @@ import { getWeatherDetails } from "../../types/weather";
 interface CurrentWeatherCardProps {
   forecastData: ForecastDTO;
   locationName: string;
+  onAddFavorite: () => void;
 }
 
 const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   forecastData,
   locationName,
+  onAddFavorite,
 }) => {
   // Format date for display
   const formatDate = (dateString: string): string => {
@@ -42,6 +44,11 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div>
             <h2 className="text-2xl font-bold">{locationName}</h2>
+            {onAddFavorite && (
+              <button onClick={onAddFavorite} className="text-2xl">
+                ❤️
+              </button>
+            )}{" "}
             <p className="text-sm opacity-90">
               {formatDate(forecastData.currentDTO.time)} • Updated{" "}
               {formatTime(forecastData.currentDTO.time)}
