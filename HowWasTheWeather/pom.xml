@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>3.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.weatherhistoryandforecastapp</groupId>
@@ -44,7 +44,6 @@
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.0.0</version>
 		</dependency>
 		
 		<dependency>
@@ -74,24 +73,32 @@
     <artifactId>postgresql</artifactId>
     <scope>runtime</scope>
 </dependency>
-<!-- This didn't work for some reason...
+<!-- Trying this -->
 <dependency>
+    <groupId>name.nkonev.r2dbc-migrate</groupId>
+    <artifactId>r2dbc-migrate-spring-boot-starter</artifactId>
+    <version>3.2.0</version> <!-- Use the latest version from Maven Central -->
+</dependency>
+<!-- Flyway doesn't like r2dbc-migrate, so I'm trying the above -->
+<!-- <dependency>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-core</artifactId>
-	<version>11.4.0</version>
-</dependency> -->
-<!-- Trying this instead: -->
+</dependency> 
 <dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-postgresql</artifactId>
+</dependency> -->
+<!-- This might also work: -->
+<!-- <dependency>
     <groupId>org.liquibase</groupId>
     <artifactId>liquibase-core</artifactId>
-</dependency>
+</dependency> -->
 
 
 <!-- Not sure what Lombok does yet -->
 <dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
-    <version>1.18.24</version>
     <scope>provided</scope>
 </dependency>
 
