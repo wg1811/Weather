@@ -32,6 +32,20 @@ export const authService = {
   },
 
   isValidAuthToken: (): boolean => {
-    return !!localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+    try {
+      // Split the token and decode the payload
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace("-", "+").replace("_", "/");
+      const payload = JSON.parse(window.atob(base64));
+
+      // Check if token is expired
+      const currentTime = Math.floor(Date.now() / 1000);
+      return payload.exp > currentTime;
+    } catch (error) {
+      console.log("Error decoding token", error);
+      return false;
+    }
   },
 };

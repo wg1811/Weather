@@ -2,13 +2,17 @@ package com.weatherhistoryandforecastapp.HowWasTheWeather.users.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Table("users")
-public class User {
+public class User implements UserDetails {
     @Id
     private Long id;
     private String email;
@@ -26,6 +30,30 @@ public class User {
         this.password = password;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Arrays.stream(roles)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public String getPassword() { return password; }
+
+    @Override
+    public String getUsername() { return email; } // Use email as username
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -41,10 +69,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
