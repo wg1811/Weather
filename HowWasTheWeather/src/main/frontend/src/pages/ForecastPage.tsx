@@ -49,14 +49,14 @@ const ForecastPage: React.FC = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const data = await favoriteService.getFavorites(); // Need to make this
+        const data = await favoriteService.getFavorites();
         console.log("Favorites Data:", data);
         setFavorites(data);
         if (data.length > 0) {
           handleFavoriteSelect(0); // Load first favorite by default
         }
       } catch (err) {
-        console.error("Error fetching favorites:", err); // If empty, will this error? just want to do nothing.
+        console.error("Error fetching favorites:", err);
       }
     };
     if (authService.isValidAuthToken()) {

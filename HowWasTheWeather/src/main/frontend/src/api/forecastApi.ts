@@ -60,13 +60,13 @@ export const forecastApi = {
   },
 
   getForecast: async (location: string) => {
-    console.log("Starting Get Forecast...");
+    //console.log("Starting Get Forecast..."); // Degugging
     try {
       const response = await api.get("/getforecast", {
         // Using api.get b/c it has token check.
         params: { location },
       });
-      console.log("Get Forecast response:", response);
+      //  console.log("Get Forecast response:", response); // Degugging
       return response.data;
     } catch (error) {
       console.error("Error fetching full forecast:", error);

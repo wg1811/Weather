@@ -31,12 +31,29 @@ public class FavoriteLocationController {
         this.favoriteService = favoriteService;
     }
 
+    // Debugging
+    // @PostMapping
+    // public ResponseEntity<String> addFavorite(@RequestBody FavoriteLocationRequest request) {
+    //     System.out.println("Received request: " + request.getName());
+    //     return ResponseEntity.ok("Test response: " + request.getName());
+    // }
+
+
     @PostMapping
     public Mono<ResponseEntity<FavoriteLocation>> addFavorite(
             @Valid @RequestBody FavoriteLocationRequest request,
             @AuthenticationPrincipal Mono<User> userMono) {
-        return userMono.flatMap(user -> favoriteService.addFavorite(user.getId(), request.getName(), request.getLatitude(), request.getLongitude())
-                .map(favorite -> ResponseEntity.ok(favorite)));
+                System.out.println("Received request: " + request.getName()); // Debugging
+
+        return userMono
+        .doOnNext(user -> System.out.println("User authenticated: " + user.getId()))
+        .doOnError(err -> System.err.println("Auth error: " + err.getMessage()))
+        .flatMap(user -> favoriteService.addFavorite(user.getId(), request.getName(), request.getLatitude(), request.getLongitude())
+            .map(favorite -> ResponseEntity.ok(favorite)))
+        .switchIfEmpty(Mono.fromCallable(() -> {
+            System.out.println("No user authenticated");
+            return ResponseEntity.status(401).body(null);
+        }));
     }
 
     @GetMapping

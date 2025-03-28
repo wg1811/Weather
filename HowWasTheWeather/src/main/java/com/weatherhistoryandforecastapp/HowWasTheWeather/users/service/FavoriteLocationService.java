@@ -29,6 +29,7 @@ public class FavoriteLocationService {
         favorite.setLatitude(latitude);
         favorite.setLongitude(longitude);
         favorite.setCreatedAt(LocalDateTime.now());
+        System.out.println("FavoriteLocationService.addFavorite: favorite = " + favorite.getName()); // Debugging
         return repository.save(favorite);
     }
 

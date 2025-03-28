@@ -16,6 +16,7 @@ const api = axios.create({
 // Attaches jwt
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
+  console.log("Sending token:", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -28,13 +29,13 @@ api.interceptors.response.use(
     if (error.response.status === 401) {
       console.log("Unauthorized, redirecting to login"); // Need to add a redirect here
     }
-    return Promise;
+    return Promise.reject(error);
   }
 );
 
 export const favoriteLocationApi = {
   getFavorites: async (): Promise<Favorite[]> => {
-    const response = await api.get(""); // Empty string since baseURL is set
+    const response = await api.get("");
     return response.data;
   },
 
@@ -44,6 +45,9 @@ export const favoriteLocationApi = {
     longitude: number;
   }): Promise<Favorite> => {
     const response = await api.post("", location); // Pass the full location object
+    console.log("Request URL:", api.defaults.baseURL + "");
+    console.log("favLocApi - Location added:", location.name);
+    console.log("favLocApi - Favorite added:", response);
     return response.data;
   },
 

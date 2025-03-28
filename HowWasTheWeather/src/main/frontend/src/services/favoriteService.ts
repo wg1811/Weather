@@ -16,6 +16,7 @@ export const favoriteService = {
     latitude: number;
     longitude: number;
   }): Promise<Favorite> => {
+    console.log("Fovorite Location: ", location);
     return await favoriteLocationApi.addFavorite(location);
   },
   deleteFavorite: async (id: number): Promise<void> => {
