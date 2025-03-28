@@ -1,5 +1,3 @@
-// Interfaces for Weather App
-
 /**
  * Interface for current weather data
  */

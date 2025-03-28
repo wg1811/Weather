@@ -4,29 +4,38 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id; // this should prolly be the jakarta version.
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
+@Table("favorites") 
 public class FavoriteLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId; // b/c of r2dbc, just have the id here. maps to user_id in the db.
-    private String locationName;
+    @Column("user_id")
+    private Long userId; 
+    @Column("name")
+    private String name;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    @Column("created_at")
     private LocalDateTime createdAt;
 
     // Constructors
     public FavoriteLocation() {
     }
 
-    public FavoriteLocation(Long userId, String locationName) {
-        this.locationName = locationName;
+    public FavoriteLocation(Long userId, String name, BigDecimal latitude, BigDecimal longitude) {
         this.userId = userId;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters, setters, etc.
@@ -46,12 +55,12 @@ public class FavoriteLocation {
         this.userId = userId;
     }
 
-    public String getLocationName() {
-        return locationName;
+    public String getName() {
+        return name;
     }
 
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BigDecimal getLatitude() {

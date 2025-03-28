@@ -1,46 +1,48 @@
 package com.weatherhistoryandforecastapp.HowWasTheWeather.users.model;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.NotBlank;
 
 public class FavoriteLocationRequest {
     @NotBlank(message = "Location name cannot be empty")
-    private String locationName;
-    private Long Longitude;
-    private Long Latitude;
+    private String name;
+    private BigDecimal longitude;
+    private BigDecimal latitude;
 
     // Constructors
     public FavoriteLocationRequest() {
     }
 
-    public FavoriteLocationRequest(String locationName, Long Longitude, Long Latitude) {
-        this.locationName = locationName;
-        this.Longitude = Longitude;
-        this.Latitude = Latitude;
+    public FavoriteLocationRequest(String name, BigDecimal longitude, BigDecimal latitude) {
+        this.name = name;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     // Getters and Setters
-    public String getLocationName() {
-        return locationName;
+    public String getName() {
+        return name;
     }
 
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Long getLongitude() {
-        return Longitude;
+    public BigDecimal getLongitude() {
+        return longitude;
     }
 
-    public void setLongitude(Long Longitude) {
-        this.Longitude = Longitude;
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
     }
 
-    public Long getLatitude() {
-        return Latitude;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setLatitude(Long Latitude) {
-        this.Latitude = Latitude;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 
 }

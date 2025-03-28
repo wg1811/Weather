@@ -85,10 +85,6 @@ export const processFullHourlyForecast = (
 // Weather service
 export const weatherService = {
   getForecast: async (locationName: string): Promise<ForecastDTO> => {
-    try {
-      return await forecastApi.getForecast(locationName);
-    } catch (error) {
-      throw error;
-    }
+    return await forecastApi.getForecast(locationName);
   },
 };

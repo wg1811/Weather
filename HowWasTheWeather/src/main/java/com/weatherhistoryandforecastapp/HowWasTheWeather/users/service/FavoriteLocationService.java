@@ -1,8 +1,10 @@
 package com.weatherhistoryandforecastapp.HowWasTheWeather.users.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.http.ResponseEntity;  //  Should I be using this for the responses?
 import org.springframework.stereotype.Service;
 
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.FavoriteLocation;
@@ -15,20 +17,26 @@ import reactor.core.publisher.Mono;
 public class FavoriteLocationService {
     private final FavoriteLocationRepository repository;
 
-    @Autowired
+    // @Autowired  // Not sure if this is necessary
     public FavoriteLocationService(FavoriteLocationRepository repository) {
         this.repository = repository;
     }
 
-    public Mono<FavoriteLocation> saveFavorite(Long userId, String locationName) {
+    public Mono<FavoriteLocation> addFavorite(Long userId, String name, BigDecimal latitude, BigDecimal longitude) {
         FavoriteLocation favorite = new FavoriteLocation();
         favorite.setUserId(userId);
-        favorite.setLocationName(locationName);
+        favorite.setName(name);
+        favorite.setLatitude(latitude);
+        favorite.setLongitude(longitude);
         favorite.setCreatedAt(LocalDateTime.now());
         return repository.save(favorite);
     }
 
     public Flux<FavoriteLocation> getFavoritesByUser(Long userId) {
         return repository.findByUserId(userId);
+    }
+
+    public Mono<Void> deleteFavorite(Long id) {
+        return repository.deleteById(id);
     }
 }
