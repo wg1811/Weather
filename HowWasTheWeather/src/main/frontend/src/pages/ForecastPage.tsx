@@ -41,20 +41,20 @@ const ForecastPage: React.FC = () => {
 
   // Fovorites state
   const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [currentFavoriteIndex, setCurrentFavoriteIndex] = useState<number>(-1); // -1 for non-favorite
+  const [lastFavoriteIndex, setLastFavoriteIndex] = useState<number>(() => {
+    const savedIndex = localStorage.getItem("lastFavoriteIndex");
+    return savedIndex ? parseInt(savedIndex, 10) : -1; // Default to -1 if no favorite
+  })
 
   const navigate = useNavigate();
 
-  // Check authentication status and favorites when component mounts
+  // Check for favorites and authentication status when component mounts
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const data = await favoriteService.getFavorites();
         console.log("Favorites Data:", data);
         setFavorites(data);
-        if (data.length > 0) {
-          handleFavoriteSelect(0); // Load first favorite by default
-        }
       } catch (err) {
         console.error("Error fetching favorites:", err);
       }
@@ -67,10 +67,24 @@ const ForecastPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
+
+  useEffect(() => {
+    if (favorites.length > 0 && lastFavoriteIndex === -1) {
+      handleFavoriteSelect(favorites.length - 1);
+    } else if (favorites.length > 0 && lastFavoriteIndex >= 0) {
+      handleFavoriteSelect(lastFavoriteIndex);
+    }
+  }, [favorites, lastFavoriteIndex]);    
+
   const handleFavoriteSelect = async (index: number) => {
+    if (index < 0 || index >= favorites.length) {
+      console.log("Invalid index:", index);
+      return;
+    }
     const favorite = favorites[index];
-    console.log("Selected favorite:", favorite, "Index:", index);
-    setCurrentFavoriteIndex(index);
+    console.log("Favorite selected:", favorite);
+    setLastFavoriteIndex(index);
+    localStorage.setItem("lastFavoriteIndex", index.toString());
     setLoading(true);
     try {
       const data = await weatherService.getForecast(favorite.name);
@@ -93,7 +107,7 @@ const ForecastPage: React.FC = () => {
     try {
       const newFavorite = await favoriteService.addFavorite(location); // Not sure if this is location.name or the whole object.
       setFavorites([...favorites, newFavorite]);
-      setCurrentFavoriteIndex(favorites.length); // Switch to new favorite
+      setLastFavoriteIndex(favorites.length); // Switch to new favorite
     } catch (err) {
       console.error("Error adding favorite:", err);
       setError("Failed to add favorite.");
@@ -160,7 +174,7 @@ const ForecastPage: React.FC = () => {
               key={fav.id}
               onClick={() => handleFavoriteSelect(index)}
               className={`px-4 py-2 rounded ${
-                index === currentFavoriteIndex
+                index === lastFavoriteIndex
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               }`}
