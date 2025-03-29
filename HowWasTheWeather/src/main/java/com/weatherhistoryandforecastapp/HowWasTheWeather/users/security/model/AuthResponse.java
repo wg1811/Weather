@@ -1,6 +1,6 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.users.model;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.model;
 
-import lombok.Data;  //  Not sure what this is for...might be for MongoDB, so won't need it.
+import lombok.Data; //  Not sure what this is for...might be for MongoDB, so won't need it.
 
 @Data
 public class AuthResponse {
@@ -19,4 +19,3 @@ public class AuthResponse {
         this.token = token;
     }
 }
-

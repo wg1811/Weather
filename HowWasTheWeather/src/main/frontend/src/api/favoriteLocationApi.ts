@@ -16,7 +16,7 @@ const api = axios.create({
 // Attaches jwt
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  console.log("Sending token:", token);
+  console.log("Sending token:", token); //  Debugging
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -44,9 +44,9 @@ export const favoriteLocationApi = {
     latitude: number;
     longitude: number;
   }): Promise<Favorite> => {
-    const response = await api.post("", location); // Pass the full location object
     console.log("Request URL:", api.defaults.baseURL + "");
     console.log("favLocApi - Location added:", location.name);
+    const response = await api.post("", location); // Pass the full location object
     console.log("favLocApi - Favorite added:", response);
     return response.data;
   },

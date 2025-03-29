@@ -1,4 +1,4 @@
-package com.weatherhistoryandforecastapp.HowWasTheWeather.users.model;
+package com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

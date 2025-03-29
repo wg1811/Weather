@@ -11,8 +11,8 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtAuthenticationConverter;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtAuthenticationManager;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.JwtAuthenticationManager;
 
 import reactor.core.publisher.Mono;
 
@@ -35,8 +35,9 @@ public class SecurityConfig {
                         .httpBasic(basic -> basic.disable()
                                 .formLogin(login -> login.disable()
                                         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+                                        .authenticationManager(authenticationManager)
                                         .authorizeExchange(exchange -> exchange
-                                                .pathMatchers("/api/login", "/api/signup").permitAll() // Not sure if the api/ will help with my 401 issues.
+                                                .pathMatchers("/api/login", "/api/signup").permitAll()
                                                 .anyExchange().authenticated())
                                         .exceptionHandling(spec -> spec
                                                 .authenticationEntryPoint((exchange, ex) -> {

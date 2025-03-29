@@ -7,18 +7,16 @@ import org.springframework.data.annotation.Id; // this should prolly be the jaka
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
-@Entity
-@Table("favorites") 
+@Table("favorites")
 public class FavoriteLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column("user_id")
-    private Long userId; 
+    private Long userId;
     @Column("name")
     private String name;
     private BigDecimal latitude;

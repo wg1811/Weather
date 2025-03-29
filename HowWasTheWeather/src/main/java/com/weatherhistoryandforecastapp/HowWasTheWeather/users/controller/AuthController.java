@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthRequest;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.AuthResponse;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.User;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtAuthenticationManager;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.jwt.JwtTokenProvider;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.JwtAuthenticationManager;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.model.AuthRequest;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.users.security.model.AuthResponse;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.service.UserService;
 
 import jakarta.validation.Valid;

@@ -8,9 +8,7 @@ import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.User;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface UserRepository extends R2dbcRepository<User, Long> { // might want to be this:
-                                                                      // ReactiveCrudRepository<User, Long> for
-                                                                      // different DBs (e.g. MongoDB).
+public interface UserRepository extends R2dbcRepository<User, Long> {
     Mono<User> findByEmail(String email);
 
     Mono<Boolean> existsByEmail(String email);

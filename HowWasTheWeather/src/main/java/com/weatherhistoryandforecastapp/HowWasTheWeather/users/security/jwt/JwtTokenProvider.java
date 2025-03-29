@@ -54,33 +54,3 @@ public class JwtTokenProvider {
         return false;
     }
 }
-
-// private final String SECRET_KEY; // What is this secret key? Where do I get
-// it from?
-// private static final long JWT_EXPIRATION_MS = 360000000; // 100 hours
-
-// public JwtTokenProvider(@Value("${jwt.secret}") String secret) { // I don't
-// know what the jwt.secret is.
-// // For HS256 algorithm
-// this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-// }
-
-// // Reactive token generation
-// public Mono<String> generateTokenReactive(Authentication authentication) {
-// return Mono.fromCallable(() -> generateJwtToken(authentication));
-// }
-
-// public List<GrantedAuthority> getAuthoritiesFromToken(String token) {
-// Claims claims = getAllClaimsFromToken(token);
-// return ((List<?>) claims.get("roles")).stream()
-// .map(auth -> new SimpleGrantedAuthority((String) auth))
-// .collect(Collectors.toList());
-// }
-
-// private Claims getAllClaimsFromToken(String token) {
-// return Jwts.parserBuilder()
-// .verifyWith(key)
-// .build()
-// .parseSignedClaims(token)
-// .getBody();
-// }
