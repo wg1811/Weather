@@ -5,13 +5,15 @@ import { getWeatherDetails } from "../../types/weather";
 interface CurrentWeatherCardProps {
   forecastData: ForecastDTO;
   locationName: string;
-  onAddFavorite: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
 const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
   forecastData,
   locationName,
-  onAddFavorite,
+  isFavorite,
+  onToggleFavorite,
 }) => {
   // Format date for display
   const formatDate = (dateString: string): string => {
@@ -43,17 +45,23 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div>
-            <h2 className="text-2xl font-bold">{locationName}</h2>
-            {onAddFavorite && (
-              <button onClick={onAddFavorite} className="text-2xl">
-                ❤️
-              </button>
-            )}{" "}
-            <p className="text-sm opacity-90">
-              {formatDate(forecastData.currentDTO.time)} • Updated{" "}
-              {formatTime(forecastData.currentDTO.time)}
-            </p>
-          </div>
+          <div className="flex items-center">
+          <h2 className="text-2xl font-bold">{locationName}</h2>
+          {onToggleFavorite && (
+            <button 
+              onClick={onToggleFavorite} 
+              className="text-2xl ml-2"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              {isFavorite ? "❤️" : "🤍"}
+            </button>
+          )}
+        </div>
+        <p className="text-sm opacity-90">
+          {formatDate(forecastData.currentDTO.time)} • Updated{" "}
+          {formatTime(forecastData.currentDTO.time)}
+        </p>
+      </div>
           <div className="flex items-center mt-4 md:mt-0">
             <span className="text-7xl mr-4">
               {getWeatherDetails(forecastData.currentDTO.weather_code).icon}

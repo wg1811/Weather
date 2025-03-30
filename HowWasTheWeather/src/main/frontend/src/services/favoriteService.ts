@@ -19,7 +19,7 @@ export const favoriteService = {
     console.log("Fovorite Location: ", location);
     return await favoriteLocationApi.addFavorite(location);
   },
-  deleteFavorite: async (id: number): Promise<void> => {
+  removeFavorite: async (id: number): Promise<void> => {
     await favoriteLocationApi.removeFavorite(id);
   },
 };

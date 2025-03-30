@@ -102,17 +102,45 @@ const ForecastPage: React.FC = () => {
     }
   };
 
-  const handleAddFavorite = async () => {
-    if (!location || favorites.some((f) => f.name === location.name)) return;
-    try {
-      const newFavorite = await favoriteService.addFavorite(location); // Not sure if this is location.name or the whole object.
-      setFavorites([...favorites, newFavorite]);
-      setLastFavoriteIndex(favorites.length); // Switch to new favorite
-    } catch (err) {
-      console.error("Error adding favorite:", err);
-      setError("Failed to add favorite.");
+  const handleToggleFavorite = async () => {
+    if (!location) return;
+    const existingFavorite = favorites.find((f) => f.name === location.name);
+    if (existingFavorite) {
+      // Remove favorite
+      try {
+        await favoriteService.removeFavorite(Number(existingFavorite.id));
+        setFavorites(favorites.filter((f) => f.id !== existingFavorite.id));
+        if (lastFavoriteIndex >= favorites.length - 1) {
+          setLastFavoriteIndex(favorites.length - 2); 
+        }
+      } catch (err) {
+        console.error("Error removing favorite:", err);
+        setError("Failed to remove favorite.");
+      }
+    } else {
+      try {
+        const newFavorite = await favoriteService.addFavorite(location);
+        setFavorites([...favorites, newFavorite]);
+        setLastFavoriteIndex(favorites.length); // Switch to new favorite
+      } catch (err) {
+        console.error("Error adding favorite:", err);
+        setError("Failed to add favorite.");
+      }
     }
   };
+
+   // Replaced by handleToggleFavorite
+  // const handleAddFavorite = async () => {
+  //   if (!location || favorites.some((f) => f.name === location.name)) return;
+  //   try {
+  //     const newFavorite = await favoriteService.addFavorite(location); // Not sure if this is location.name or the whole object.
+  //     setFavorites([...favorites, newFavorite]);
+  //     setLastFavoriteIndex(favorites.length); // Switch to new favorite
+  //   } catch (err) {
+  //     console.error("Error adding favorite:", err);
+  //     setError("Failed to add favorite.");
+  //   }
+  // };
 
   // Handler for logout
   const handleLogout = () => {
@@ -210,7 +238,8 @@ const ForecastPage: React.FC = () => {
           <CurrentWeatherCard
             forecastData={forecastData}
             locationName={location.name}
-            onAddFavorite={handleAddFavorite}
+            isFavorite={favorites.some((f) => f.name === location.name)}
+            onToggleFavorite={handleToggleFavorite}
           />
 
           {/* Hourly Forecast */}
