@@ -1,4 +1,4 @@
-import { forecastApi } from "../api/forecastApi";
+import { authApi } from "../api/authApi";
 
 export interface AuthState {
   isAuthenticatedState: boolean;
@@ -16,13 +16,13 @@ export const initialAuthState: AuthState = {
 
 export const authService = {
   login: async (email: string, password: string): Promise<string> => {
-    const token = await forecastApi.login(email, password);
+    const token = await authApi.login(email, password);
     localStorage.setItem("token", token);
     return token;
   },
 
   signup: async (email: string, password: string): Promise<string> => {
-    const token = await forecastApi.signup(email, password);
+    const token = await authApi.signup(email, password);
     localStorage.setItem("token", token);
     return token;
   },
@@ -30,6 +30,8 @@ export const authService = {
   logout: (): void => {
     localStorage.removeItem("token");
   },
+
+  getToken: (): string | null => localStorage.getItem("token"),
 
   isValidAuthToken: (): boolean => {
     const token = localStorage.getItem("token");

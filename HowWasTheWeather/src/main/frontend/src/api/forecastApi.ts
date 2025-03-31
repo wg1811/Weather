@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API_BASE_URL = "/api/forecast";
-const AUTH_BASE_URL = "/api/login"; // This is dumb.  Should change or delete.
 
 // Auth stuff
 const api = axios.create({
@@ -28,37 +27,6 @@ api.interceptors.response.use(
 );
 
 export const forecastApi = {
-  // Login stuff
-  login: async (email: string, password: string) => {
-    console.log("Starting login... email:", email, "password:", password);
-    console.log("AUTH_BASE_URL:", AUTH_BASE_URL);
-    try {
-      const response = await axios.post(AUTH_BASE_URL, { email, password });
-      console.log("Login response:", response);
-      const token = response.data.token; // I'm pretty sure this is the right structure: "token": "eyJhb...
-      localStorage.setItem("token", token);
-      return token;
-    } catch (error) {
-      console.error("Error logging in:", error);
-      throw error;
-    }
-  },
-
-  // Need to add this flow and test the backend works
-  signup: async (email: string, password: string) => {
-    console.log("Starting signup... email:", email, "password:", password);
-    try {
-      const response = await axios.post("/api/signup", { email, password }); // tried api instead of axios...
-      console.log("Signup response:", response);
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      return token;
-    } catch (error) {
-      console.error("Error signing up:", error);
-      throw error;
-    }
-  },
-
   getForecast: async (location: string) => {
     //console.log("Starting Get Forecast..."); // Degugging
     try {

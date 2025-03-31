@@ -40,8 +40,11 @@ public class AuthController {
                     String token = tokenProvider.generateToken(authentication);
                     return ResponseEntity.ok(new AuthResponse(token));
                 })
-                .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid credentials")));
-    }
+                .onErrorResume(BadCredentialsException.class, e -> 
+                Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse(null, "Invalid credentials"))))
+            .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse(null, "Invalid credentials"))));    }
 
     @PostMapping("/api/signup")
     public Mono<ResponseEntity<AuthResponse>> signup(@Valid @RequestBody AuthRequest request) {
