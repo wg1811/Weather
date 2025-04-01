@@ -11,6 +11,15 @@ public class AuthRequest {
     @NotBlank
     private String password;
 
+    // Default constructor
+    public AuthRequest() {
+    }
+
+    public AuthRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     // Getters and setters
     public String getEmail() {
         return email;

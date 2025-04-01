@@ -3,8 +3,6 @@ package com.weatherhistoryandforecastapp.HowWasTheWeather.users.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;  //  Should I be using this for the responses?
 import org.springframework.stereotype.Service;
 
 import com.weatherhistoryandforecastapp.HowWasTheWeather.users.model.FavoriteLocation;
@@ -17,7 +15,6 @@ import reactor.core.publisher.Mono;
 public class FavoriteLocationService {
     private final FavoriteLocationRepository repository;
 
-    // @Autowired  // Not sure if this is necessary
     public FavoriteLocationService(FavoriteLocationRepository repository) {
         this.repository = repository;
     }
@@ -29,7 +26,7 @@ public class FavoriteLocationService {
         favorite.setLatitude(latitude);
         favorite.setLongitude(longitude);
         favorite.setCreatedAt(LocalDateTime.now());
-        System.out.println("FavoriteLocationService.addFavorite: favorite = " + favorite.getName()); // Debugging
+        System.out.println("FavoriteLocationService.addFavorite: favorite = " + favorite.getName()); // Debugging, delet and use a logger (e.g., SLF4J)
         return repository.save(favorite);
     }
 
