@@ -26,18 +26,9 @@ import reactor.core.publisher.Mono;
 public class FavoriteLocationController {
     private final FavoriteLocationService favoriteService;
 
-//     @Autowired // Unsure if this is necessary
     public FavoriteLocationController(FavoriteLocationService favoriteService) {
         this.favoriteService = favoriteService;
     }
-
-    // Debugging
-    // @PostMapping
-    // public ResponseEntity<String> addFavorite(@RequestBody FavoriteLocationRequest request) {
-    //     System.out.println("Received request: " + request.getName());
-    //     return ResponseEntity.ok("Test response: " + request.getName());
-    // }
-
 
     @PostMapping
     public Mono<ResponseEntity<FavoriteLocation>> addFavorite(

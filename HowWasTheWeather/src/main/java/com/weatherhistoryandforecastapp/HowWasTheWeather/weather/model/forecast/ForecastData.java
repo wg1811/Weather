@@ -12,7 +12,7 @@ public record ForecastData(
                 double generationTime_Ms,
                 @NotNull String requestTime,
                 CurrentWeatherData current,
-                CurrentUnits currentUnits,
+                CurrentWeatherUnits currentUnits,
                 DailyForecastUnits dailyUnits,
                 HourlyForecastUnits hourlyUnits,
                 DailyForecastData daily,

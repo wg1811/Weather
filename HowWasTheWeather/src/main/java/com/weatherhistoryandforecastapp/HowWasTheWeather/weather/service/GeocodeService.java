@@ -57,26 +57,9 @@ public class GeocodeService {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                                 "Failed to extract coordinates.");
                     } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse response.",
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to extract coordinates.",
                                 e);
                     }
                 });
     }
 }
-
-// In case I want to use this elsewhere (was from a Controller):
-// @GetMapping("/getcoordinates")
-// public Mono<ResponseEntity<Coordinates>> getCoordinates(@RequestParam String
-// location) {
-// return geocodeService.getCoordinates(location)
-// .map(coordinates -> ResponseEntity.ok(coordinates))
-// .onErrorResume(e -> {
-// e.printStackTrace();
-// if (e instanceof ResponseStatusException) {
-// ResponseStatusException rse = (ResponseStatusException) e;
-// return Mono.just(ResponseEntity.status(rse.getStatusCode()).body(null));
-// }
-// return
-// Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
-// });
-// }

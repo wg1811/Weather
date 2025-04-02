@@ -5,17 +5,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class HowWasTheWeatherApplicationTests {
-
+    // This test is used to check if the Spring application context loads successfully. Overkill.
 	@Test
 	void contextLoads() {
 	}
-
-	    // @GetMapping("/testgetweather")
-    // public void testGetWeather(@RequestParam String location, @RequestParam String startDate,
-    //         @RequestParam String endDate) {
-    //     Mono<Coordinates> coordinates = geocodeService.getCoordinates(location);
-    //     coordinates.subscribe(coords -> weatherService.GetWeatherTest(coords, startDate, endDate));
-    // }
-
-
 }

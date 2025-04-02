@@ -1,0 +1,143 @@
+package com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Coordinates;
+
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+public class GeocodeServiceTest {
+
+    private GeocodeService service;
+    private WebClient webClient;
+    private WebClient.RequestHeadersUriSpec<?> requestHeadersUriSpec;
+    private WebClient.RequestHeadersSpec<?> requestHeadersSpec;
+    private WebClient.ResponseSpec responseSpec;
+    private ClientResponse clientResponse;
+
+
+    @BeforeEach
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    void setUp() {
+// Mock Webclient and chain
+        webClient = Mockito.mock(WebClient.class);
+        requestHeadersUriSpec = Mockito.mock(WebClient.RequestHeadersUriSpec.class);
+        requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec.class);
+        responseSpec = Mockito.mock(WebClient.ResponseSpec.class);
+        clientResponse = Mockito.mock(ClientResponse.class);
+        
+
+        // Stub the chain
+        when((WebClient.RequestHeadersUriSpec) webClient.get()).thenReturn((WebClient.RequestHeadersUriSpec) requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(java.util.function.Function.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(clientResponse.statusCode()).thenReturn(HttpStatus.NOT_FOUND);
+
+
+        // Create the service
+        WebClient.Builder builder = Mockito.mock(WebClient.Builder.class);
+        when(builder.baseUrl("https://maps.googleapis.com/maps/api/geocode/json")).thenReturn(builder);
+        when(builder.build()).thenReturn(webClient);
+
+        service = new GeocodeService(builder);
+}
+
+@Test
+    void getCoordinates_returnsCoordinatesForValidAddress() {
+        // Arrange
+        String address = "1600 Amphitheatre Parkway, Mountain View, CA";
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode location = mapper.createObjectNode()
+            .put("lat", 37.4221)
+            .put("lng", -122.0841);
+        ObjectNode geometry = mapper.createObjectNode().set("location", location);
+        ArrayNode results = mapper.createArrayNode().add(mapper.createObjectNode().set("geometry", geometry));
+        JsonNode mockResponse = mapper.createObjectNode().set("results", results);
+        when(responseSpec.bodyToMono(JsonNode.class)).thenReturn(Mono.just(mockResponse));
+
+        // Act
+        Mono<Coordinates> result = service.getCoordinates(address);
+
+        // Assert
+        StepVerifier.create(result)
+            .assertNext(coords -> {
+                assertThat(coords.lat()).isEqualTo(37.4221);
+                assertThat(coords.lng()).isEqualTo(-122.0841);
+            })
+            .verifyComplete();
+    }
+
+    @Test
+    void getCoordinates_throwsNotFoundFor404() {
+        // Arrange
+        String address = "Nonexistent Place";
+         // Set up the client response for 404
+         when(clientResponse.statusCode()).thenReturn(HttpStatus.NOT_FOUND);
+        
+         when(responseSpec.bodyToMono(JsonNode.class))
+         .thenReturn(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, 
+             "No results found for the given address.")));
+
+            // Act
+        Mono<Coordinates> result = service.getCoordinates(address);
+
+        // Assert
+        StepVerifier.create(result)
+            .expectErrorMatches(throwable ->
+                throwable instanceof ResponseStatusException &&
+                ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.NOT_FOUND &&
+                "No results found for the given address.".equals(throwable.getMessage()))
+            .verify();
+    }
+
+    @Test
+    void getCoordinates_throwsInternalErrorForEmptyResults() {
+        String address = "Empty Response Place";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode mockResponse = mapper.createObjectNode().set("results", mapper.createArrayNode()); // Empty results
+        when(responseSpec.bodyToMono(JsonNode.class)).thenReturn(Mono.just(mockResponse));
+
+        Mono<Coordinates> result = service.getCoordinates(address);
+
+        // Assuming actual message from GeocodeService
+        StepVerifier.create(result)
+            .expectErrorMatches(throwable ->
+                throwable instanceof ResponseStatusException &&
+                ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR &&
+                "Failed to extract coordinates.".equals(throwable.getMessage()))
+            .verify();
+    }
+
+    @Test
+    void getCoordinates_throwsInternalErrorForInvalidJson() {
+        String address = "Bad JSON Place";
+        when(responseSpec.bodyToMono(JsonNode.class))
+        .thenReturn(Mono.just(null)); // This will cause a NullPointerException in the map function
+        
+        Mono<Coordinates> result = service.getCoordinates(address);
+
+        // Assuming actual message from GeocodeService
+        StepVerifier.create(result)
+            .expectErrorMatches(throwable ->
+                throwable instanceof ResponseStatusException &&
+                ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR &&
+                "Failed to extract coordinates.".equals(throwable.getMessage()))
+            .verify();
+    }
+}

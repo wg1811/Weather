@@ -12,7 +12,6 @@ import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.CurrentWeat
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.DailyForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.ForecastDTO;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.DTO.HourlyForecastDTO;
-import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.repository.WeatherRepository;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.ForecastService;
 import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.service.GeocodeService;
 
@@ -22,13 +21,11 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/forecast")
 public class ForecastController {
 
-    // private final WeatherRepository weatherRepository;
     private final ForecastService forecastService;
     private final GeocodeService geocodeService;
 
-    public ForecastController(WeatherRepository weatherRepository, ForecastService forecastService,
+    public ForecastController(ForecastService forecastService,
             GeocodeService geocodeService) {
-        // this.weatherRepository = weatherRepository;
         this.geocodeService = geocodeService;
         this.forecastService = forecastService;
     }
@@ -82,30 +79,3 @@ public class ForecastController {
     }
 }
 
-// @GetMapping("/weatherlist")
-// String listWeather() {
-// return weatherRepository.listWeather().toString();
-// }
-
-// // Post
-// @ResponseStatus(HttpStatus.CREATED)
-// @PostMapping("/")
-// void createWeather(@RequestBody Weather weather) {
-// weatherRepository.create(weather);
-// }
-
-// // Put
-// @ResponseStatus(HttpStatus.NO_CONTENT)
-// @PutMapping("/update")
-// void update(@RequestBody Weather oldWeather, @RequestBody Weather newWeather)
-// {
-// weatherRepository.update(oldWeather, newWeather);
-// }
-
-// // Delete
-// @ResponseStatus(HttpStatus.NO_CONTENT)
-// @DeleteMapping("/{id}")
-// void delete(@PathVariable int id) {
-// weatherRepository.delete(id);
-// }
-// }
