@@ -55,9 +55,9 @@ public class GeocodeService {
                             }
                         }
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                                "Failed to extract coordinates.");
+                                "Failed to get coordinates.");
                     } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to extract coordinates.",
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to get coordinates.",
                                 e);
                     }
                 });

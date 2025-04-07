@@ -31,8 +31,6 @@ public class AuthController {
         this.authManager = authManager;
     }
 
-    // added /api to the path to differentiate from frontend server /login? I don't
-    // understand this stuff yet.
     @PostMapping("/api/login")
     public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         return authManager.authenticateWithCredentials(request.getEmail(), request.getPassword())

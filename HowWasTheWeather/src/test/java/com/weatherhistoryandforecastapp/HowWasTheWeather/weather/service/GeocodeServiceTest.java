@@ -6,11 +6,17 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,14 +27,20 @@ import com.weatherhistoryandforecastapp.HowWasTheWeather.weather.model.common.Co
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 public class GeocodeServiceTest {
 
-    private GeocodeService service;
+@Mock
     private WebClient webClient;
+    @Mock
     private WebClient.RequestHeadersUriSpec<?> requestHeadersUriSpec;
+    @Mock
     private WebClient.RequestHeadersSpec<?> requestHeadersSpec;
+    @Mock
     private WebClient.ResponseSpec responseSpec;
-    private ClientResponse clientResponse;
+    @InjectMocks
+    private GeocodeService service;
+
 
 
     @BeforeEach
@@ -39,15 +51,14 @@ public class GeocodeServiceTest {
         requestHeadersUriSpec = Mockito.mock(WebClient.RequestHeadersUriSpec.class);
         requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec.class);
         responseSpec = Mockito.mock(WebClient.ResponseSpec.class);
-        clientResponse = Mockito.mock(ClientResponse.class);
+ //       clientResponse = Mockito.mock(ClientResponse.class);
         
 
         // Stub the chain
         when((WebClient.RequestHeadersUriSpec) webClient.get()).thenReturn((WebClient.RequestHeadersUriSpec) requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(any(java.util.function.Function.class))).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
-        when(clientResponse.statusCode()).thenReturn(HttpStatus.NOT_FOUND);
+ //       when(clientResponse.statusCode()).thenReturn(HttpStatus.NOT_FOUND);
 
 
         // Create the service
@@ -85,17 +96,21 @@ public class GeocodeServiceTest {
 
     @Test
     void getCoordinates_throwsNotFoundFor404() {
-        // Arrange
-        String address = "Nonexistent Place";
-         // Set up the client response for 404
-         when(clientResponse.statusCode()).thenReturn(HttpStatus.NOT_FOUND);
-        
-         when(responseSpec.bodyToMono(JsonNode.class))
-         .thenReturn(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, 
-             "No results found for the given address.")));
+   ClientResponse clientResponse = ClientResponse.create(HttpStatus.NOT_FOUND)
+            .build();
+    
+    when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+    when(responseSpec.bodyToMono(any(Class.class)))
+            .thenReturn(Mono.error(HttpClientErrorException.create(
+                    HttpStatus.NOT_FOUND,
+                    "Not Found",
+                    null,
+                    null,
+                    null)));
+
 
             // Act
-        Mono<Coordinates> result = service.getCoordinates(address);
+        Mono<Coordinates> result = service.getCoordinates("the wrong address not anything");
 
         // Assert
         StepVerifier.create(result)
@@ -120,7 +135,7 @@ public class GeocodeServiceTest {
             .expectErrorMatches(throwable ->
                 throwable instanceof ResponseStatusException &&
                 ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR &&
-                "Failed to extract coordinates.".equals(throwable.getMessage()))
+                "Failed to get coordinates.".equals(throwable.getMessage()))
             .verify();
     }
 
@@ -128,7 +143,7 @@ public class GeocodeServiceTest {
     void getCoordinates_throwsInternalErrorForInvalidJson() {
         String address = "Bad JSON Place";
         when(responseSpec.bodyToMono(JsonNode.class))
-        .thenReturn(Mono.just(null)); // This will cause a NullPointerException in the map function
+        .thenReturn(Mono.just(null)); // This will cause a NullPointerException in the map function, which shows as an error, so change this.
         
         Mono<Coordinates> result = service.getCoordinates(address);
 
@@ -137,7 +152,7 @@ public class GeocodeServiceTest {
             .expectErrorMatches(throwable ->
                 throwable instanceof ResponseStatusException &&
                 ((ResponseStatusException) throwable).getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR &&
-                "Failed to extract coordinates.".equals(throwable.getMessage()))
+                "Failed to get coordinates.".equals(throwable.getMessage()))
             .verify();
     }
 }
