@@ -2,11 +2,11 @@
 
 A full-stack web application for retrieving weather forecasts and managing user favorite locations. The backend is built with Java Spring Boot, providing RESTful APIs to fetch geolocation and weather data from external services, as well as user management features. The frontend is a modern single-page application (SPA) built with Vite, TypeScript, and styled using Tailwind CSS.
 
-![Search and Current Weather](howwastheweather/images/forecast-ui1.png "Search and Current Weather")
+![Search and Current Weather](HowWasTheWeather/images/forecast-ui1.png "Search and Current Weather")
 
-![Hourly Forecast](images/forecast-ui2.png "Hourly Forecast")
+![Hourly Forecast](HowWasTheWeather/images/forecast-ui2.png "Hourly Forecast")
 
-![Daily Forecast with Clickable Hourly Breakdown](images/forecast-ui1.png "Daily Forecast with Clickable Hourly Breakdown")
+![Daily Forecast with Clickable Hourly Breakdown](HowWasTheWeather/images/forecast-ui3.png "Daily Forecast with Clickable Hourly Breakdown")
 
 ## Features
 - **Geocoding**: Convert addresses to latitude/longitude coordinates using the Google Maps Geocoding API.
