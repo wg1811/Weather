@@ -165,7 +165,7 @@ weather-history-forecast-app/
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd weather-history-forecast-app/backend
+   cd weather
    ```
 2. Configure environment variables in `src/main/resources/application.properties`:
    ```properties
@@ -175,25 +175,7 @@ weather-history-forecast-app/
    spring.r2dbc.password=<your-postgres-password>
    spring.sql.init.mode=always
    ```
-3. (Optional) If you need to initialize the schema, create a `schema.sql` file in `src/main/resources`:
-   ```sql
-   CREATE TABLE users (
-       id SERIAL PRIMARY KEY,
-       email VARCHAR(255) UNIQUE NOT NULL,
-       password VARCHAR(255) NOT NULL
-   );
-
-   CREATE TABLE favorite_location (
-       id SERIAL PRIMARY KEY,
-       user_id BIGINT NOT NULL,
-       name VARCHAR(255) NOT NULL,
-       latitude DECIMAL(9,6) NOT NULL,
-       longitude DECIMAL(9,6) NOT NULL,
-       created_at TIMESTAMP NOT NULL,
-       FOREIGN KEY (user_id) REFERENCES users(id)
-   );
-   ```
-4. Build and run the backend:
+3. Build and run the backend:
    ```bash
    mvn clean install
    mvn spring-boot:run
