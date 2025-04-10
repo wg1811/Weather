@@ -19,23 +19,3 @@ public record ForecastDTO(
                 return dailyDTO;
         }
 }
-
-// Records automatically generate a constructor. This was only necessary if I
-// wanted to use LocalDateTime instead of String.
-// _____________________________________________________________________________________
-// public ForecastDTO(String startDate, double latitude, double longitude,
-// DailyForecastDTO dailyDTO, HourlyForecastDTO hourlyDTO) {
-// this(
-// startDate,
-// // location,
-// latitude,
-// longitude,
-// dailyDTO,
-// hourlyDTO);
-// }
-
-// public ForecastDTO(String requestTime, double latitude, double longitude,
-// HourlyForecastDTO hourlyDTO, DailyForecastDTO dailyDTO) {
-// this(requestTime.toString(), latitude, longitude, dailyDTO, hourlyDTO);
-// }
-// }
