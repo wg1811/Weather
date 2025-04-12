@@ -10,12 +10,16 @@ public class AuthResponse {
 
     public AuthResponse(String token) {
         this.token = token;
-        this.errorMessage = null; 
+        this.errorMessage = null;
     }
+
     // for errors
     public AuthResponse(String token, String errorMessage) {
         this.token = token;
-        this.errorMessage = errorMessage; 
+        this.errorMessage = errorMessage;
+    }
+
+    public AuthResponse() {
     }
 
     public String getToken() {

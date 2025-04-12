@@ -38,11 +38,12 @@ public class AuthController {
                     String token = tokenProvider.generateToken(authentication);
                     return ResponseEntity.ok(new AuthResponse(token));
                 })
-                .onErrorResume(BadCredentialsException.class, e -> 
-                Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse(null, "Invalid credentials"))))
-            .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse(null, "Invalid credentials"))));    }
+                .onErrorResume(BadCredentialsException.class,
+                        e -> Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(new AuthResponse(null, "Invalid credentials"))))
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse(null, "Invalid credentials"))));
+    }
 
     @PostMapping("/api/signup")
     public Mono<ResponseEntity<AuthResponse>> signup(@Valid @RequestBody AuthRequest request) {
@@ -57,6 +58,13 @@ public class AuthController {
                 .map(authentication -> {
                     String token = tokenProvider.generateToken(authentication);
                     return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+                })
+                .onErrorResume(e -> {
+                    // Log the error for debugging
+                    System.err.println("Signup error: " + e.getMessage());
+                    e.printStackTrace();
+                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new AuthResponse(null, "Signup failed: " + e.getMessage())));
                 });
     }
 }
